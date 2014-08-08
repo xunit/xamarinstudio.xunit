@@ -30,7 +30,7 @@ using Xunit;
 using Xunit.Abstractions;
 using System.Collections.Generic;
 
-namespace XUnitRunner
+namespace MonoDevelop.XUnit
 {
 	[Serializable]
 	public class XUnitTestInfo

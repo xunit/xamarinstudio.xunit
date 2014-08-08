@@ -53,10 +53,11 @@
     <Compile Include="XUnitTestSuite.cs" />
     <Compile Include="XUnitTestRunner.cs" />
     <Compile Include="XUnitTestInfo.cs" />
-    <Compile Include="IXUnitTest.cs" />
     <Compile Include="XUnitTestExecutor.cs" />
     <Compile Include="XUnitTestLoader.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="XUnitExecutionSession.cs" />
+    <Compile Include="XUnitTestInfoCache.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

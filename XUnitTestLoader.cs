@@ -32,7 +32,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using System.Linq;
-using XUnitRunner;
 
 namespace MonoDevelop.XUnit
 {
@@ -41,11 +40,11 @@ namespace MonoDevelop.XUnit
 		bool isRunning = false;
 		Queue<XUnitAssemblyTestSuite> loadQueue = new Queue<XUnitAssemblyTestSuite> ();
 
-		public void AsyncLoadTestSuite (XUnitAssemblyTestSuite testSuite)
+		public void AsyncLoadTestInfo (XUnitAssemblyTestSuite testSuite, XUnitTestInfoCache cache)
 		{
 			lock (loadQueue) {
 				if (!isRunning) {
-					var thread = new Thread (new ThreadStart (RunAsyncLoadTestSuite)) {
+					var thread = new Thread (new ThreadStart (() => RunAsyncLoadTestInfo (cache))) {
 						Name = "xUnit.NET test loader",
 						IsBackground = true
 					};
@@ -58,7 +57,7 @@ namespace MonoDevelop.XUnit
 			}
 		}
 
-		void RunAsyncLoadTestSuite ()
+		void RunAsyncLoadTestInfo (XUnitTestInfoCache cache)
 		{
 			while (true) {
 				XUnitAssemblyTestSuite testSuite;
@@ -72,11 +71,29 @@ namespace MonoDevelop.XUnit
 					testSuite = loadQueue.Dequeue ();
 				}
 
-				using (var runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(XUnitTestRunner), false)) {
-					testSuite.TestInfo = runner.GetTestInfo (testSuite.Assembly, testSuite.SupportAssemblies.ToArray());
+				XUnitTestInfo testInfo;
+
+				try {
+					// If the information is cached in a file and it is up to date information,
+					// there is no need to parse again the assembly.
+
+					if (cache.Exists) {
+						cache.ReadFromDisk ();
+						testInfo = cache.GetTestInfo ();
+						if (testInfo != null) {
+							testSuite.OnTestSuiteLoaded (testInfo);
+							continue;
+						}
+					}
+				} catch (Exception ex) {
+					LoggingService.LogError (ex.ToString ());
 				}
 
-				testSuite.OnTestSuiteLoaded ();
+				using (var runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(XUnitTestRunner), false)) {
+					testInfo = runner.GetTestInfo (testSuite.AssemblyPath, testSuite.SupportAssemblies.ToArray());
+				}
+
+				testSuite.OnTestSuiteLoaded (testInfo);
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 //
-// XUnitAssemblyTestSuite.cs
+// XUnitTestSuite.cs
 //
 // Author:
 //       Sergey Khabibullin <sergey@khabibullin.com>
@@ -29,17 +29,16 @@ using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using XUnitRunner;
 
 namespace MonoDevelop.XUnit
 {
-	public class XUnitTestSuite: UnitTestGroup, IXUnitTest
+	public class XUnitTestSuite: UnitTestGroup, IExecutableTest
 	{
 		XUnitAssemblyTestSuite rootSuite;
 		XUnitTestExecutor executor;
 		public XUnitTestInfo TestInfo { get; private set; }
 
-		ExecutionSession session;
+		XUnitExecutionSession session;
 
 		public XUnitTestSuite (XUnitAssemblyTestSuite rootSuite, XUnitTestExecutor executor, XUnitTestInfo testInfo): base (testInfo.Name)
 		{
@@ -48,12 +47,12 @@ namespace MonoDevelop.XUnit
 			this.executor = executor;
 		}
 
-		public ExecutionSession CreateExecutionSession ()
+		public XUnitExecutionSession CreateExecutionSession ()
 		{
-			session = new ExecutionSession (this);
+			session = new XUnitExecutionSession (this);
 
 			foreach (var test in Tests) {
-				var xunitTest = test as IXUnitTest;
+				var xunitTest = test as IExecutableTest;
 				if (xunitTest != null) {
 					var childSession = xunitTest.CreateExecutionSession ();
 					session.AddChildSession (childSession);

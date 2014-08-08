@@ -1,5 +1,5 @@
 ﻿//
-// IXUnitRunnableSuite.cs
+// XUnitExecutionSession.cs
 //
 // Author:
 //       Sergey Khabibullin <sergey@khabibullin.com>
@@ -29,17 +29,12 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.XUnit
 {
-	public interface IXUnitTest
-	{
-		ExecutionSession CreateExecutionSession ();
-	}
-
-	public class ExecutionSession: IDisposable
+	public class XUnitExecutionSession: IDisposable
 	{
 		UnitTest unitTest;
 		UnitTestResult result;
-		ExecutionSession parentSession;
-		List<ExecutionSession> childSessions;
+		XUnitExecutionSession parentSession;
+		List<XUnitExecutionSession> childSessions;
 		int childSessionsStarted = 0;
 		int childSessionsFinished = 0;
 		bool isActive = false;
@@ -50,11 +45,11 @@ namespace MonoDevelop.XUnit
 			}
 		}
 
-		public ExecutionSession (UnitTest unitTest)
+		public XUnitExecutionSession (UnitTest unitTest)
 		{
 			this.unitTest = unitTest;
 			result = new UnitTestResult ();
-			childSessions = new List<ExecutionSession> ();
+			childSessions = new List<XUnitExecutionSession> ();
 		}
 
 		public void Begin (TestContext context)
@@ -86,20 +81,20 @@ namespace MonoDevelop.XUnit
 			}
 		}
 
-		public void AddChildSession (ExecutionSession childSession)
+		public void AddChildSession (XUnitExecutionSession childSession)
 		{
 			childSession.parentSession = this;
 			childSessions.Add (childSession);
 		}
 
-		void OnChildSessionStarting (ExecutionSession childSession, TestContext context)
+		void OnChildSessionStarting (XUnitExecutionSession childSession, TestContext context)
 		{
 			// begin session if the first child session started
 			if (++childSessionsStarted == 1)
 				Begin (context);
 		}
 
-		void OnChildSessionFinished (ExecutionSession childSession, TestContext context)
+		void OnChildSessionFinished (XUnitExecutionSession childSession, TestContext context)
 		{
 			result.Add (childSession.result);
 			// end session if the last child session finished
@@ -114,6 +109,11 @@ namespace MonoDevelop.XUnit
 			}
 			childSessions = null;
 		}
+	}
+
+	public interface IExecutableTest
+	{
+		XUnitExecutionSession CreateExecutionSession ();
 	}
 }
 

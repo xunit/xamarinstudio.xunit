@@ -7,7 +7,7 @@
        url         = "http://github.com/x2bool/monodevelop-xunit"
        description = "Integrates xUnit.NET into the MonoDevelop IDE."
        category    = "Testing"
-       version     = "0.1">
+       version     = "0.2">
 
 	<Runtime>
 		<Import assembly="xunit.abstractions.dll" />

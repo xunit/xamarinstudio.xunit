@@ -32,7 +32,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using System.Linq;
-using XUnitRunner;
 using System.IO;
 
 namespace MonoDevelop.XUnit
@@ -75,23 +74,19 @@ namespace MonoDevelop.XUnit
 			}
 		}
 
-		UnitTestResult Run (List<XUnitTestCase> testCases, XUnitAssemblyTestSuite rootSuite, IXUnitTest test, TestContext context)
+		UnitTestResult Run (List<XUnitTestCase> testCases, XUnitAssemblyTestSuite rootSuite, IExecutableTest test, TestContext context)
 		{
 			using (var session = test.CreateExecutionSession ()) {
 				var executionListener = new RemoteExecutionListener (new LocalExecutionListener (context, testCases));
 				System.Runtime.Remoting.RemotingServices.Marshal (executionListener, null, typeof (IXUnitExecutionListener));
 
-				try {
-					XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(XUnitTestRunner),
-						context.ExecutionContext, rootSuite.SupportAssemblies);
+				XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(XUnitTestRunner),
+					context.ExecutionContext, rootSuite.SupportAssemblies);
 
-					try {
-						runner.Execute (rootSuite.Assembly, testCases.Select (tc => tc.TestInfo).ToArray (), executionListener);
-					} finally {
-						runner.Dispose ();
-					}
-				} catch (Exception e) {
-					throw e;
+				try {
+					runner.Execute (rootSuite.AssemblyPath, testCases.Select (tc => tc.TestInfo).ToArray (), executionListener);
+				} finally {
+					runner.Dispose ();
 				}
 
 				return session.Result;

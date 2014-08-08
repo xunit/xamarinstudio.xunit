@@ -50,9 +50,15 @@ namespace MonoDevelop.XUnit
 			IdeApp.ProjectOperations.EndBuild += new BuildEventHandler (OnProjectBuilt);
 		}
 
-		public override string Assembly {
+		public override string AssemblyPath {
 			get {
 				return project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
+			}
+		}
+
+		public override string CachePath {
+			get {
+				return Path.Combine (resultsPath, storeId + ".xunit-test-cache");
 			}
 		}
 
@@ -88,6 +94,13 @@ namespace MonoDevelop.XUnit
 		{
 			if (RefreshRequired)
 				UpdateTests ();
+		}
+
+		public override void Dispose ()
+		{
+			project.NameChanged -= new SolutionItemRenamedEventHandler (OnProjectRenamed);
+			IdeApp.ProjectOperations.EndBuild -= new BuildEventHandler (OnProjectBuilt);
+			base.Dispose ();
 		}
 
 		static string GetTestResultsDirectory (string baseDirectory)

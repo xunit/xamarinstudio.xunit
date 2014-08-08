@@ -31,40 +31,42 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using System.Linq;
-using XUnitRunner;
 using System.IO;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.XUnit
 {
-	public abstract class XUnitAssemblyTestSuite: UnitTestGroup, IXUnitTest
+	public abstract class XUnitAssemblyTestSuite: UnitTestGroup, IExecutableTest
 	{
 		object locker = new object ();
 
 		static XUnitTestLoader loader = new XUnitTestLoader ();
 		static XUnitTestExecutor executor = new XUnitTestExecutor ();
+		XUnitTestInfoCache cache;
 
-		public abstract string Assembly { get; }
+		public abstract string AssemblyPath { get; }
+		public abstract string CachePath { get; }
 		public abstract IList<string> SupportAssemblies { get; }
-		public XUnitTestInfo TestInfo { get; set; }
 
 		DateTime lastAssemblyTime;
-		ExecutionSession session;
+		XUnitExecutionSession session;
 
 		public XUnitAssemblyTestSuite (string name): base (name)
 		{
+			cache = new XUnitTestInfoCache (this);
 		}
 
 		public XUnitAssemblyTestSuite (string name, DotNetProject project): base (name, project)
 		{
+			cache = new XUnitTestInfoCache (this);
 		}
 
-		public ExecutionSession CreateExecutionSession ()
+		public XUnitExecutionSession CreateExecutionSession ()
 		{
-			session = new ExecutionSession (this);
+			session = new XUnitExecutionSession (this);
 
 			foreach (var test in Tests) {
-				var xunitTest = test as IXUnitTest;
+				var xunitTest = test as IExecutableTest;
 				if (xunitTest != null) {
 					var childSession = xunitTest.CreateExecutionSession ();
 					session.AddChildSession (childSession);
@@ -88,7 +90,7 @@ namespace MonoDevelop.XUnit
 
 		DateTime GetAssemblyTime ()
 		{
-			string path = Assembly;
+			string path = AssemblyPath;
 			if (File.Exists (path))
 				return File.GetLastWriteTime (path);
 			else
@@ -101,12 +103,18 @@ namespace MonoDevelop.XUnit
 				if (Status == TestStatus.Loading)
 					return;
 
+				var testInfo = cache.GetTestInfo ();
+				if (testInfo != null) {
+					FillTests (testInfo);
+					return;
+				}
+
 				Status = TestStatus.Loading;
 			}
 
 			lastAssemblyTime = GetAssemblyTime ();
 
-			loader.AsyncLoadTestSuite (this);
+			loader.AsyncLoadTestInfo (this, cache);
 		}
 
 		public override IAsyncOperation Refresh ()
@@ -135,7 +143,7 @@ namespace MonoDevelop.XUnit
 			return oper;
 		}
 
-		public void OnTestSuiteLoaded ()
+		public void OnTestSuiteLoaded (XUnitTestInfo testInfo)
 		{
 			lock (locker) {
 				Status = TestStatus.Ready;
@@ -143,28 +151,29 @@ namespace MonoDevelop.XUnit
 			}
 
 			DispatchService.GuiDispatch (delegate {
-				AsyncCreateTests ();
+				AsyncCreateTests (testInfo);
 			});
 		}
 
-		void AsyncCreateTests ()
+		void AsyncCreateTests (XUnitTestInfo testInfo)
 		{
 			Tests.Clear ();
-			FillTests ();
+			FillTests (testInfo);
+			cache.SetTestInfo (testInfo);
 			OnTestChanged ();
 		}
 
-		void FillTests ()
+		void FillTests (XUnitTestInfo testInfo)
 		{
-			if (TestInfo == null || TestInfo.Tests == null)
+			if (testInfo == null || testInfo.Tests == null)
 				return;
 
-			foreach (var testInfo in TestInfo.Tests) {
+			foreach (var child in testInfo.Tests) {
 				UnitTest test;
-				if (testInfo.Tests == null)
-					test = new XUnitTestCase (this, executor, testInfo);
+				if (child.Tests == null)
+					test = new XUnitTestCase (this, executor, child);
 				else
-					test = new XUnitTestSuite (this, executor, testInfo);
+					test = new XUnitTestSuite (this, executor, child);
 				Tests.Add (test);
 			}
 		}
@@ -178,6 +187,17 @@ namespace MonoDevelop.XUnit
 		{
 			UpdateTests ();
 			base.OnActiveConfigurationChanged ();
+		}
+
+		public override void Dispose ()
+		{
+			try {
+				if (CachePath != null) {
+					cache.WriteToDisk ();
+				}
+			} catch {
+			}
+			base.Dispose ();
 		}
 	}
 }

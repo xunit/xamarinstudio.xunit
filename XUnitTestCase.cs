@@ -29,18 +29,17 @@ using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using XUnitRunner;
 using System.IO;
 
 namespace MonoDevelop.XUnit
 {
-	public class XUnitTestCase: UnitTest, IXUnitTest
+	public class XUnitTestCase: UnitTest, IExecutableTest
 	{
 		XUnitAssemblyTestSuite rootSuite;
 		XUnitTestExecutor executor;
 		public XUnitTestInfo TestInfo { get; private set; }
 
-		ExecutionSession session;
+		XUnitExecutionSession session;
 
 		public XUnitTestCase (XUnitAssemblyTestSuite rootSuite, XUnitTestExecutor executor, XUnitTestInfo testInfo): base (testInfo.Name)
 		{
@@ -54,9 +53,9 @@ namespace MonoDevelop.XUnit
 			return executor.RunTestCase (rootSuite, this, testContext);
 		}
 
-		public ExecutionSession CreateExecutionSession ()
+		public XUnitExecutionSession CreateExecutionSession ()
 		{
-			session = new ExecutionSession (this);
+			session = new XUnitExecutionSession (this);
 			return session;
 		}
 

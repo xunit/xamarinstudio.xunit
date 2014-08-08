@@ -33,7 +33,7 @@ using System.Linq;
 using System.IO;
 using System.Threading;
 
-namespace XUnitRunner
+namespace MonoDevelop.XUnit
 {
 	public class XUnitTestRunner: RemoteProcessObject
 	{
@@ -53,27 +53,29 @@ namespace XUnitRunner
 		{
 			var infos = new List<TestCaseInfo> ();
 
-			using (var controller = new XunitFrontController (assembly, null, false)) 
-			using (var discoveryVisitor = new TestDiscoveryVisitor ()) {
-				controller.Find(false, discoveryVisitor, new TestFrameworkOptions ());
-				discoveryVisitor.Finished.WaitOne ();
+			if (assembly != null && File.Exists (assembly)) {
+				using (var controller = new XunitFrontController (assembly, null, false))
+				using (var discoveryVisitor = new TestDiscoveryVisitor ()) {
+					controller.Find (false, discoveryVisitor, new TestFrameworkOptions ());
+					discoveryVisitor.Finished.WaitOne ();
 
-				foreach (var testCase in discoveryVisitor.TestCases)
-					infos.Add (new TestCaseInfo {
-						Id = testCase.UniqueID,
-						Type = testCase.TestMethod.TestClass.Class.Name,
-						Method = testCase.TestMethod.Method.Name,
-						DisplayName = testCase.DisplayName
-					});
+					foreach (var testCase in discoveryVisitor.TestCases)
+						infos.Add (new TestCaseInfo {
+							Id = testCase.UniqueID,
+							Type = testCase.TestMethod.TestClass.Class.Name,
+							Method = testCase.TestMethod.Method.Name,
+							DisplayName = testCase.DisplayName
+						});
+				}
+
+				// sort by type, method
+				infos.Sort ((info1, info2) => {
+					int i = info1.Type.CompareTo (info2.Type);
+					if (i == 0)
+						i = info1.Method.CompareTo (info2.Method);
+					return i;
+				});
 			}
-
-			// sort by type, method
-			infos.Sort ((info1, info2) => {
-				int i = info1.Type.CompareTo (info2.Type);
-				if (i == 0)
-					i = info1.Method.CompareTo (info2.Method);
-				return i;
-			});
 
 			var testInfo = new XUnitTestInfo ();
 			BuildTestInfo (testInfo, infos, 0);
@@ -83,6 +85,10 @@ namespace XUnitRunner
 		void BuildTestInfo (XUnitTestInfo testInfo, IEnumerable<TestCaseInfo> infos, int step)
 		{
 			int count = infos.Count ();
+
+			if (count == 0)
+				return;
+
 			var firstItem = infos.First ();
 
 			// if the test is the last element in the group
@@ -121,27 +127,18 @@ namespace XUnitRunner
 		{
 			var lookup = new HashSet<string> ();
 			foreach (var testInfo in testInfos)
-				lookup.Add (String.Format ("{0}.{1}", testInfo.Type, testInfo.Method));
+				lookup.Add (testInfo.Id);
 
 			// we don't want to run every test in the assembly
-			// only those, passed in "testInfos" argument
-			Func<ITestCase, bool> filter = tc => {
-				var fullName = String.Format ("{0}.{1}", tc.TestMethod.TestClass.Class.Name, tc.TestMethod.Method.Name);
-				return lookup.Contains (fullName);
-			};
+			// only the tests passed in "testInfos" argument
+			using (var controller = new XunitFrontController (assembly, null, false))
+			using (var discoveryVisitor = new TestDiscoveryVisitor (tc => lookup.Contains (tc.UniqueID)))
+			using (var executionVisitor = new TestExecutionVisitor (executionListener)) {
+				controller.Find(false, discoveryVisitor, new TestFrameworkOptions ());
+				discoveryVisitor.Finished.WaitOne ();
 
-			try {
-				using (var controller = new XunitFrontController (assembly, null, false))
-				using (var discoveryVisitor = new TestDiscoveryVisitor (filter))
-				using (var executionVisitor = new TestExecutionVisitor (executionListener)) {
-					controller.Find(false, discoveryVisitor, new TestFrameworkOptions ());
-					discoveryVisitor.Finished.WaitOne ();
-
-					controller.RunTests (discoveryVisitor.TestCases, executionVisitor,
-						new XunitExecutionOptions { DisableParallelization = true, SynchronousMessageReporting = true });
-				}
-			} catch (Exception e) {
-				throw e;
+				controller.RunTests (discoveryVisitor.TestCases, executionVisitor,
+					new XunitExecutionOptions { DisableParallelization = true, SynchronousMessageReporting = true });
 			}
 		}
 
