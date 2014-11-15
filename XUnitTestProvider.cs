@@ -29,6 +29,9 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.XUnit
 {
+	/// <summary>
+	/// Provider is used to register xUnit.net framework at NUnitService.
+	/// </summary>
 	public class XUnitTestProvider: ITestProvider
 	{
 		public UnitTest CreateUnitTest (IWorkspaceObject entry)

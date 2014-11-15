@@ -29,9 +29,14 @@ using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.XUnit
 {
+	/// <summary>
+	/// Non-leaf node in the test tree. When executed listens for it's children
+	/// events using execution session.
+	/// </summary>
 	public class XUnitTestSuite: UnitTestGroup, IExecutableTest
 	{
 		XUnitAssemblyTestSuite rootSuite;
@@ -81,6 +86,11 @@ namespace MonoDevelop.XUnit
 					test = new XUnitTestCase (rootSuite, executor, info);
 				Tests.Add (test);
 			}
+		}
+
+		protected override bool OnCanRun (IExecutionHandler executionContext)
+		{
+			return rootSuite.CanRun (executionContext);
 		}
 
 		protected override UnitTestResult OnRun (TestContext testContext)

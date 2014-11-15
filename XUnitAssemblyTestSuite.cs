@@ -33,6 +33,7 @@ using MonoDevelop.Projects;
 using System.Linq;
 using System.IO;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.XUnit
 {
@@ -176,6 +177,11 @@ namespace MonoDevelop.XUnit
 					test = new XUnitTestSuite (this, executor, child);
 				Tests.Add (test);
 			}
+		}
+
+		protected override bool OnCanRun (IExecutionHandler executionContext)
+		{
+			return Runtime.ProcessService.IsValidForRemoteHosting (executionContext);
 		}
 
 		protected override UnitTestResult OnRun (TestContext testContext)

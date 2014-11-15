@@ -34,6 +34,9 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.XUnit
 {
+	/// <summary>
+	/// Root test node for every project that has references to xunit dlls
+	/// </summary>
 	public class XUnitProjectTestSuite: XUnitAssemblyTestSuite
 	{
 		DotNetProject project;
@@ -64,7 +67,7 @@ namespace MonoDevelop.XUnit
 
 		public override IList<string> SupportAssemblies {
 			get {
-				return project.References
+				return project.References // references that are not copied localy
 					.Where (r => !r.LocalCopy && r.ReferenceType != ReferenceType.Package)
 					.SelectMany (r => r.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration)).ToList ();
 			}

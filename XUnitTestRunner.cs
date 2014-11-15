@@ -35,6 +35,9 @@ using System.Threading;
 
 namespace MonoDevelop.XUnit
 {
+	/// <summary>
+	/// Wrapper around xUnit.net framework internals. Extracts and runs tests.
+	/// </summary>
 	public class XUnitTestRunner: RemoteProcessObject
 	{
 		public XUnitTestInfo GetTestInfo (string assembly, string[] supportAssemblies)
@@ -59,13 +62,14 @@ namespace MonoDevelop.XUnit
 					controller.Find (false, discoveryVisitor, new TestFrameworkOptions ());
 					discoveryVisitor.Finished.WaitOne ();
 
-					foreach (var testCase in discoveryVisitor.TestCases)
+					foreach (var testCase in discoveryVisitor.TestCases) {
 						infos.Add (new TestCaseInfo {
 							Id = testCase.UniqueID,
 							Type = testCase.TestMethod.TestClass.Class.Name,
 							Method = testCase.TestMethod.Method.Name,
 							DisplayName = testCase.DisplayName
 						});
+					}
 				}
 
 				// sort by type, method

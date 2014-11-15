@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <Addin namespace   = "MonoDevelop.XUnit"
        id          = "XUnit"
        name        = "xUnit.NET testing framework support"
@@ -7,20 +7,28 @@
        url         = "http://github.com/x2bool/monodevelop-xunit"
        description = "Integrates xUnit.NET into the MonoDevelop IDE."
        category    = "Testing"
-       version     = "0.2">
+       version     = "0.3">
 
 	<Runtime>
 		<Import assembly="xunit.abstractions.dll" />
 		<Import assembly="xunit.runner.utility.dll" />
 	</Runtime>
 
-    <Dependencies>
-        <Addin id="::MonoDevelop.Ide" version="5.0" />
-        <Addin id="::MonoDevelop.Core" version="5.0" />
-        <Addin id="::MonoDevelop.NUnit" version="5.0" />
-    </Dependencies>
+	<Dependencies>
+		<Addin id="::MonoDevelop.Ide" version="5.0" />
+		<Addin id="::MonoDevelop.Core" version="5.0" />
+		<Addin id="::MonoDevelop.NUnit" version="5.0" />
+	</Dependencies>
 
 	<Extension path = "/MonoDevelop/NUnit/TestProviders">
 		<Class id="XUnitTestProvider" class="MonoDevelop.XUnit.XUnitTestProvider" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+		<ProjectTemplate id = "XUnitProject" resource = "XUnitProject.xpt.xml"/>
+	</Extension>
+
+  	<Extension path = "/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate id = "XUnitTestClass" resource = "XUnitTestClass.xft.xml"/>
 	</Extension>
 </Addin>

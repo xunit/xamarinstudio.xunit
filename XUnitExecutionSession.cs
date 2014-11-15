@@ -29,10 +29,16 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.XUnit
 {
+	/// <summary>
+	/// Execution session is used by executor to report results
+	/// back to monitor. Session reports it's status to parent
+	/// session when it changes.
+	/// </summary>
 	public class XUnitExecutionSession: IDisposable
 	{
 		UnitTest unitTest;
 		UnitTestResult result;
+		TestContext context;
 		XUnitExecutionSession parentSession;
 		List<XUnitExecutionSession> childSessions;
 		int childSessionsStarted = 0;
@@ -42,6 +48,12 @@ namespace MonoDevelop.XUnit
 		public UnitTestResult Result {
 			get {
 				return result;
+			}
+		}
+
+		public TestContext Context {
+			get {
+				return context;
 			}
 		}
 
@@ -55,6 +67,8 @@ namespace MonoDevelop.XUnit
 		public void Begin (TestContext context)
 		{
 			if (!isActive) {
+				this.context = context;
+
 				// notify the parent session before starting the test itself
 				if (parentSession != null)
 					parentSession.OnChildSessionStarting (this, context);
@@ -66,7 +80,7 @@ namespace MonoDevelop.XUnit
 			}
 		}
 
-		public void End (TestContext context)
+		public void End ()
 		{
 			if (isActive) {
 				context.Monitor.EndTest (unitTest, result);
@@ -75,7 +89,7 @@ namespace MonoDevelop.XUnit
 
 				// notify the parent session after finishing the test itself
 				if (parentSession != null)
-					parentSession.OnChildSessionFinished (this, context);
+					parentSession.OnChildSessionFinished (this);
 
 				isActive = false;
 			}
@@ -94,12 +108,12 @@ namespace MonoDevelop.XUnit
 				Begin (context);
 		}
 
-		void OnChildSessionFinished (XUnitExecutionSession childSession, TestContext context)
+		void OnChildSessionFinished (XUnitExecutionSession childSession)
 		{
 			result.Add (childSession.result);
 			// end session if the last child session finished
 			if (++childSessionsFinished == childSessions.Count)
-				End (context);
+				End ();
 		}
 
 		public void Dispose ()

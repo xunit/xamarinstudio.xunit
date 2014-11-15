@@ -35,6 +35,11 @@ using System.Linq;
 
 namespace MonoDevelop.XUnit
 {
+	/// <summary>
+	/// Loads data into XUnitAssemblyTestSuite using either xUnit.NET tools
+	/// or cache when possible. This class intended to be instantiated only
+	/// once and loads data asynchronously using internal queue.
+	/// </summary>
 	public class XUnitTestLoader
 	{
 		bool isRunning = false;

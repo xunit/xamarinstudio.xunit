@@ -36,6 +36,10 @@ using System.IO;
 
 namespace MonoDevelop.XUnit
 {
+	/// <summary>
+	/// Wrapper around XUnitTestRunner. It extracts all information needed to
+	/// run tests, then dispatches rusults back to tests.
+	/// </summary>
 	public class XUnitTestExecutor
 	{
 		public UnitTestResult RunTestCase (XUnitAssemblyTestSuite rootSuite, XUnitTestCase testCase, TestContext context)
@@ -157,31 +161,31 @@ namespace MonoDevelop.XUnit
 		public void OnTestCaseStarting (string id)
 		{
 			var testCase = lookup [id];
-			testCase.OnStarting (context);
+			testCase.OnStarting (context, id);
 		}
 
 		public void OnTestCaseFinished (string id)
 		{
 			var testCase = lookup [id];
-			testCase.OnFinished (context);
+			testCase.OnFinished (context, id);
 		}
 
 		public void OnTestFailed (string id, decimal executionTime, string output, string[] exceptionTypes, string[] messages, string[] stackTraces)
 		{
 			var testCase = lookup [id];
-			testCase.OnFailed (context, executionTime, output, exceptionTypes, messages, stackTraces);
+			testCase.OnFailed (context, id, executionTime, output, exceptionTypes, messages, stackTraces);
 		}
 
 		public void OnTestPassed (string id, decimal executionTime, string output)
 		{
 			var testCase = lookup [id];
-			testCase.OnPassed (context, executionTime, output);
+			testCase.OnPassed (context, id, executionTime, output);
 		}
 
 		public void OnTestSkipped (string id, string reason)
 		{
 			var testCase = lookup [id];
-			testCase.OnSkipped (context, reason);
+			testCase.OnSkipped (context, id, reason);
 		}
 	}
 }

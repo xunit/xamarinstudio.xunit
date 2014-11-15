@@ -30,6 +30,9 @@ using System.IO;
 
 namespace MonoDevelop.XUnit
 {
+	/// <summary>
+	/// Stores data extracted by test loader on disk.
+	/// </summary>
 	public class XUnitTestInfoCache
 	{
 		CachedTestInfo cachedTestInfo = new CachedTestInfo ();
