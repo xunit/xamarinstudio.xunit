@@ -33,6 +33,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using System.Linq;
 using System.IO;
+using System.Runtime.Remoting;
 
 namespace MonoDevelop.XUnit
 {
@@ -44,7 +45,7 @@ namespace MonoDevelop.XUnit
 	{
 		public UnitTestResult RunTestCase (XUnitAssemblyTestSuite rootSuite, XUnitTestCase testCase, TestContext context)
 		{
-			return Run (new List<XUnitTestCase> { testCase }, rootSuite, testCase, context);
+			return Run (new List<XUnitTestCase> { testCase }, rootSuite, testCase, context, false);
 		}
 
 		public UnitTestResult RunTestSuite (XUnitAssemblyTestSuite rootSuite, XUnitTestSuite testSuite, TestContext context)
@@ -78,11 +79,11 @@ namespace MonoDevelop.XUnit
 			}
 		}
 
-		UnitTestResult Run (List<XUnitTestCase> testCases, XUnitAssemblyTestSuite rootSuite, IExecutableTest test, TestContext context)
+		UnitTestResult Run (List<XUnitTestCase> testCases, XUnitAssemblyTestSuite rootSuite, IExecutableTest test, TestContext context, bool reportToMonitor = true)
 		{
-			using (var session = test.CreateExecutionSession ()) {
+			using (var session = test.CreateExecutionSession (reportToMonitor)) {
 				var executionListener = new RemoteExecutionListener (new LocalExecutionListener (context, testCases));
-				System.Runtime.Remoting.RemotingServices.Marshal (executionListener, null, typeof (IXUnitExecutionListener));
+				RemotingServices.Marshal (executionListener, null, typeof (IXUnitExecutionListener));
 
 				XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(XUnitTestRunner),
 					context.ExecutionContext, rootSuite.SupportAssemblies);

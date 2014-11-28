@@ -62,14 +62,14 @@ namespace MonoDevelop.XUnit
 			cache = new XUnitTestInfoCache (this);
 		}
 
-		public XUnitExecutionSession CreateExecutionSession ()
+		public XUnitExecutionSession CreateExecutionSession (bool reportToMonitor)
 		{
-			session = new XUnitExecutionSession (this);
+			session = new XUnitExecutionSession (this, reportToMonitor);
 
 			foreach (var test in Tests) {
 				var xunitTest = test as IExecutableTest;
 				if (xunitTest != null) {
-					var childSession = xunitTest.CreateExecutionSession ();
+					var childSession = xunitTest.CreateExecutionSession (reportToMonitor);
 					session.AddChildSession (childSession);
 				}
 			}
@@ -81,6 +81,11 @@ namespace MonoDevelop.XUnit
 			get {
 				return true;
 			}
+		}
+
+		public virtual SourceCodeLocation GetSourceCodeLocation (UnitTest unitTest)
+		{
+			return null;
 		}
 
 		protected bool RefreshRequired {

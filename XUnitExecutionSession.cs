@@ -41,6 +41,8 @@ namespace MonoDevelop.XUnit
 		TestContext context;
 		XUnitExecutionSession parentSession;
 		List<XUnitExecutionSession> childSessions;
+
+		bool reportToMonitor;
 		int childSessionsStarted = 0;
 		int childSessionsFinished = 0;
 		bool isActive = false;
@@ -57,8 +59,9 @@ namespace MonoDevelop.XUnit
 			}
 		}
 
-		public XUnitExecutionSession (UnitTest unitTest)
+		public XUnitExecutionSession (UnitTest unitTest, bool reportToMonitor)
 		{
+			this.reportToMonitor = reportToMonitor;
 			this.unitTest = unitTest;
 			result = new UnitTestResult ();
 			childSessions = new List<XUnitExecutionSession> ();
@@ -73,8 +76,10 @@ namespace MonoDevelop.XUnit
 				if (parentSession != null)
 					parentSession.OnChildSessionStarting (this, context);
 
-				context.Monitor.BeginTest (unitTest);
-				unitTest.Status = TestStatus.Running;
+				if (reportToMonitor) {
+					context.Monitor.BeginTest (unitTest);
+					unitTest.Status = TestStatus.Running;
+				}
 
 				isActive = true;
 			}
@@ -83,9 +88,11 @@ namespace MonoDevelop.XUnit
 		public void End ()
 		{
 			if (isActive) {
-				context.Monitor.EndTest (unitTest, result);
-				unitTest.Status = TestStatus.Ready;
-				unitTest.RegisterResult (context, result);
+				if (reportToMonitor) {
+					context.Monitor.EndTest (unitTest, result);
+					unitTest.Status = TestStatus.Ready;
+					unitTest.RegisterResult (context, result);
+				}
 
 				// notify the parent session after finishing the test itself
 				if (parentSession != null)
@@ -127,7 +134,7 @@ namespace MonoDevelop.XUnit
 
 	public interface IExecutableTest
 	{
-		XUnitExecutionSession CreateExecutionSession ();
+		XUnitExecutionSession CreateExecutionSession (bool reportToMonitor);
 	}
 }
 

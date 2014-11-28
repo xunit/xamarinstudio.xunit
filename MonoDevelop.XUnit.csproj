@@ -44,6 +44,9 @@
     <Reference Include="MonoDevelop.NUnit, Version=2.6.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
+    <Reference Include="ICSharpCode.NRefactory, Version=5.0.0.0, Culture=neutral, PublicKeyToken=d4bfe873e7598c49">
+      <Package>monodevelop</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="XUnitTestProvider.cs" />

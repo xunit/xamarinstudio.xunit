@@ -63,9 +63,15 @@ namespace MonoDevelop.XUnit
 			return executor.RunTestCase (rootSuite, this, testContext);
 		}
 
-		public XUnitExecutionSession CreateExecutionSession ()
+		public override SourceCodeLocation SourceCodeLocation {
+			get {
+				return rootSuite.GetSourceCodeLocation (this);
+			}
+		}
+
+		public XUnitExecutionSession CreateExecutionSession (bool reportToMonitor)
 		{
-			session = new XUnitExecutionSession (this);
+			session = new XUnitExecutionSession (this, reportToMonitor);
 			return session;
 		}
 
@@ -240,13 +246,22 @@ namespace MonoDevelop.XUnit
 		/// </summary>
 		class VirtualTest : UnitTest
 		{
+			XUnitTestCase testCase;
+
 			public VirtualTest (XUnitTestCase testCase, int i): base (string.Format("{0} ({1})", testCase.FullName, i))
 			{
+				this.testCase = testCase;
 			}
 
 			protected override UnitTestResult OnRun (TestContext testContext)
 			{
 				return null;
+			}
+
+			public override SourceCodeLocation SourceCodeLocation {
+				get {
+					return testCase.SourceCodeLocation;
+				}
 			}
 		}
 	}
