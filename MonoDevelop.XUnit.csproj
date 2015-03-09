@@ -7,6 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.XUnit</RootNamespace>
     <AssemblyName>MonoDevelop.XUnit</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,10 +31,10 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="xunit.abstractions">
-      <HintPath>packages\xunit.abstractions.2.0.0-beta-build2700\lib\net35\xunit.abstractions.dll</HintPath>
+      <HintPath>packages\xunit.abstractions.2.0.0-beta5-build2785\lib\net35\xunit.abstractions.dll</HintPath>
     </Reference>
     <Reference Include="xunit.runner.utility">
-      <HintPath>packages\xunit.runner.utility.2.0.0-beta-build2700\lib\net35\xunit.runner.utility.dll</HintPath>
+      <HintPath>packages\xunit.runner.utility.2.0.0-beta5-build2785\lib\net35\xunit.runner.utility.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Core, Version=2.6.0.0, Culture=neutral">
       <Package>monodevelop</Package>
@@ -71,4 +72,11 @@
       <LogicalName>MonoDevelop.XUnit.addin.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  <Target Name="BeforeBuild">
+    <PropertyGroup>
+      <NuGet>$(SolutionDir)\external\nuget-binary\NuGet.exe</NuGet>
+      <NuGet Condition="$(OS)=='Unix'">mono $(NuGet)</NuGet>
+    </PropertyGroup>
+    <Exec Command="$(NuGet) restore -PackagesDirectory packages packages.config" />
+  </Target>
 </Project>

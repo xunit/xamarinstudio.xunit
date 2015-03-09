@@ -7,7 +7,7 @@
        url         = "http://github.com/xunit/xamarinstudio.xunit"
        description = "Integrates xUnit.NET into the MonoDevelop / Xamarin Studio IDE."
        category    = "Testing"
-       version     = "0.3.1">
+       version     = "0.4">
 
 	<Runtime>
 		<Import assembly="xunit.abstractions.dll" />

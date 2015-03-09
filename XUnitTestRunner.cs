@@ -221,12 +221,6 @@ namespace MonoDevelop.XUnit
 
 			return true;
 		}
-
-		public override void Dispose ()
-		{
-			foreach (var testCase in TestCases)
-				testCase.Dispose ();
-		}
 	}
 
 	public class TestExecutionVisitor: TestMessageVisitor<ITestAssemblyFinished>
