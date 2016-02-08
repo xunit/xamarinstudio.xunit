@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectTypeGuids>{86F6BF2A-E449-4B3E-813B-9ACC37E5545F};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{749EF588-C012-4A59-AA3C-B7722AAC0A09}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>MonoDevelop.XUnit</RootNamespace>
+    <AssemblyName>MonoDevelop.XUnit</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\AddinInfo.cs" />
+    <Compile Include="XUnitAssemblyTestSuite.cs" />
+    <Compile Include="XUnitExecutionSession.cs" />
+    <Compile Include="XUnitProjectTestSuite.cs" />
+    <Compile Include="XUnitTestCase.cs" />
+    <Compile Include="XUnitTestExecutor.cs" />
+    <Compile Include="XUnitTestInfo.cs" />
+    <Compile Include="XUnitTestInfoCache.cs" />
+    <Compile Include="XUnitTestLoader.cs" />
+    <Compile Include="XUnitTestProvider.cs" />
+    <Compile Include="XUnitTestRunner.cs" />
+    <Compile Include="XUnitTestSuite.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Manifest.addin.xml" />
+    <EmbeddedResource Include="XUnitProject.xpt.xml">
+      <LogicalName>XUnitProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="XUnitTestClass.xft.xml">
+      <LogicalName>XUnitTestClass.xft.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\MonoDevelop.Addins.0.2.3\build\net40\MonoDevelop.Addins.targets" Condition="Exists('..\packages\MonoDevelop.Addins.0.2.3\build\net40\MonoDevelop.Addins.targets')" />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddinReference Include="MonoDevelop.NUnit" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="xunit.abstractions">
+      <HintPath>..\packages\xunit.abstractions.2.0.0\lib\portable-net45+win+wpa81+wp80+monotouch+monoandroid+Xamarin.iOS\xunit.abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.runner.utility.dotnet">
+      <HintPath>..\packages\xunit.runner.utility.2.1.0\lib\portable-net45+win8+wp8+wpa81\xunit.runner.utility.dotnet.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

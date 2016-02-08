@@ -1,6 +1,6 @@
 <AddinProject appVersion="5.0">
 	<Project platforms="Linux Mac Win32">
-		<AddinFile>bin/MonoDevelop.XUnit.dll</AddinFile>
+		<AddinFile>MonoDevelop.XUnit/bin/Release/MonoDevelop.XUnit.dll</AddinFile>
 		<BuildFile>MonoDevelop.XUnit.sln</BuildFile>
 		<BuildConfiguration>Release</BuildConfiguration>
 	</Project>

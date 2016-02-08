@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionModel>
+	<Runtime>
+		<Import assembly="xunit.abstractions.dll" />
+		<Import assembly="xunit.runner.utility.dotnet.dll" />
+	</Runtime>
+
+	<Extension path = "/MonoDevelop/NUnit/TestProviders">
+		<Class id="XUnitTestProvider" class="MonoDevelop.XUnit.XUnitTestProvider" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+		<ProjectTemplate id = "XUnitProject" resource = "XUnitProject.xpt.xml"/>
+	</Extension>
+
+  	<Extension path = "/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate id = "XUnitTestClass" resource = "XUnitTestClass.xft.xml"/>
+	</Extension>
+</ExtensionModel>

@@ -57,9 +57,9 @@ namespace MonoDevelop.XUnit
 			var infos = new List<TestCaseInfo> ();
 
 			if (assembly != null && File.Exists (assembly)) {
-				using (var controller = new XunitFrontController (assembly, null, false))
+				using (var controller = new XunitFrontController (AppDomainSupport.Denied, assembly, null, false))
 				using (var discoveryVisitor = new TestDiscoveryVisitor ()) {
-					controller.Find (false, discoveryVisitor, new TestFrameworkOptions ());
+					controller.Find (false, discoveryVisitor, TestFrameworkOptions.ForDiscovery ());
 					discoveryVisitor.Finished.WaitOne ();
 
 					foreach (var testCase in discoveryVisitor.TestCases) {
@@ -135,14 +135,17 @@ namespace MonoDevelop.XUnit
 
 			// we don't want to run every test in the assembly
 			// only the tests passed in "testInfos" argument
-			using (var controller = new XunitFrontController (assembly, null, false))
+			using (var controller = new XunitFrontController (AppDomainSupport.Denied, assembly, null, false))
 			using (var discoveryVisitor = new TestDiscoveryVisitor (tc => lookup.Contains (tc.UniqueID)))
 			using (var executionVisitor = new TestExecutionVisitor (executionListener)) {
-				controller.Find(false, discoveryVisitor, new TestFrameworkOptions ());
+				controller.Find(false, discoveryVisitor, TestFrameworkOptions.ForDiscovery ());
 				discoveryVisitor.Finished.WaitOne ();
 
-				controller.RunTests (discoveryVisitor.TestCases, executionVisitor,
-					new XunitExecutionOptions { DisableParallelization = true, SynchronousMessageReporting = true });
+				var options = TestFrameworkOptions.ForExecution ();
+				options.SetDisableParallelization (true);
+				options.SetSynchronousMessageReporting (true);
+
+				controller.RunTests (discoveryVisitor.TestCases, executionVisitor, options);
 			}
 		}
 
