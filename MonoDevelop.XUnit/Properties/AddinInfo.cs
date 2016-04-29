@@ -3,13 +3,13 @@ using Mono.Addins;
 using Mono.Addins.Description;
 
 [assembly:Addin (
-	"MonoDevelop.XUnit", 
+	"MonoDevelop.XUnit2", 
 	Namespace = "MonoDevelop.XUnit",
 	Version = "0.5"
 )]
 
-[assembly:AddinName ("xUnit.NET testing framework support")]
+[assembly:AddinName ("xUnit.NET 2 testing framework support")]
 [assembly:AddinCategory ("Testing")]
-[assembly:AddinDescription ("Integrates xUnit.NET into the MonoDevelop / Xamarin Studio IDE.")]
-[assembly:AddinAuthor ("Sergey Khabibullin")]
+[assembly:AddinDescription ("Integrates xUnit.NET 2 into the MonoDevelop / Xamarin Studio IDE.")]
+[assembly:AddinAuthor ("Sergey Khabibullin/Lex Li")]
 
