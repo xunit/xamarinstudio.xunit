@@ -2,7 +2,7 @@
 <ExtensionModel>
 	<Runtime>
 		<Import assembly="xunit.abstractions.dll" />
-		<Import assembly="xunit.runner.utility.dotnet.dll" />
+		<Import assembly="xunit.runner.utility.desktop.dll" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/NUnit/TestProviders">
