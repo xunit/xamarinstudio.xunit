@@ -63,8 +63,8 @@
     <Reference Include="xunit.abstractions">
       <HintPath>..\packages\xunit.abstractions.2.0.0\lib\portable-net45+win+wpa81+wp80+monotouch+monoandroid+Xamarin.iOS\xunit.abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="xunit.runner.utility.dotnet">
-      <HintPath>..\packages\xunit.runner.utility.2.1.0\lib\portable-net45+win8+wp8+wpa81\xunit.runner.utility.dotnet.dll</HintPath>
+    <Reference Include="xunit.runner.utility.desktop">
+      <HintPath>..\packages\xunit.runner.utility.2.1.0-beta1-build2945\lib\net35\xunit.runner.utility.desktop.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
