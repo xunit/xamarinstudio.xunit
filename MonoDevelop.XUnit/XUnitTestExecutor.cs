@@ -25,23 +25,19 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.NUnit;
 using System.Collections.Generic;
-using System.Threading;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Projects;
 using System.Linq;
-using System.IO;
 using System.Runtime.Remoting;
+using MonoDevelop.UnitTesting;
 
 namespace MonoDevelop.XUnit
 {
-	/// <summary>
-	/// Wrapper around XUnitTestRunner. It extracts all information needed to
-	/// run tests, then dispatches rusults back to tests.
-	/// </summary>
-	public class XUnitTestExecutor
+    /// <summary>
+    /// Wrapper around XUnitTestRunner. It extracts all information needed to
+    /// run tests, then dispatches rusults back to tests.
+    /// </summary>
+    public class XUnitTestExecutor
 	{
 		public UnitTestResult RunTestCase (XUnitAssemblyTestSuite rootSuite, XUnitTestCase testCase, TestContext context)
 		{
@@ -86,7 +82,7 @@ namespace MonoDevelop.XUnit
 				RemotingServices.Marshal (executionListener, null, typeof (IXUnitExecutionListener));
 
 				XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(XUnitTestRunner),
-					context.ExecutionContext, rootSuite.SupportAssemblies);
+                    false, rootSuite.SupportAssemblies, context.ExecutionContext.ConsoleFactory.CreateConsole());
 
 				try {
 					runner.Execute (rootSuite.AssemblyPath, testCases.Select (tc => tc.TestInfo).ToArray (), executionListener);
@@ -155,7 +151,7 @@ namespace MonoDevelop.XUnit
 
 		public bool IsCancelRequested {
 			get {
-				return context.Monitor.IsCancelRequested;
+                return context.Monitor.CancellationToken.IsCancellationRequested;
 			}
 		}
 

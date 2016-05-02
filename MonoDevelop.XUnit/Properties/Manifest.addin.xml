@@ -5,8 +5,8 @@
 		<Import assembly="xunit.runner.utility.desktop.dll" />
 	</Runtime>
 
-	<Extension path = "/MonoDevelop/NUnit/TestProviders">
-		<Class id="XUnitTestProvider" class="MonoDevelop.XUnit.XUnitTestProvider" />
+	<Extension path = "/MonoDevelop/UnitTesting/TestProviders">
+		<Class id="XUnitTestProvider" class="MonoDevelop.UnitTesting.XUnit.SystemTestProvider" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
@@ -16,4 +16,12 @@
   	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id = "XUnitTestClass" resource = "XUnitTestClass.xft.xml"/>
 	</Extension>
+
+	<Extension path = "/MonoDevelop/UnitTesting/UnitTestMarkers">
+		<TestMarkers
+				testMethodAttributeMarker="Xunit.FactAttribute"
+				testCaseMethodAttributeMarker="XUnit.TheoryAttribute"
+			/>
+	</Extension>
+	
 </ExtensionModel>

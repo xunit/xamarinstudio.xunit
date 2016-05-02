@@ -5,7 +5,6 @@ _ReSharper*
 *.csproj.user
 *.resharper.user
 *.userprefs
-*.suo
 *.cache
 *.trx
 *.pidb
@@ -28,3 +27,4 @@ T4MVC.cs
 *.chk
 *.jrs
 *.ide
+*.mpack
