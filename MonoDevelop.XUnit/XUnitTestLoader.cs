@@ -28,16 +28,19 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 using System.Linq;
+using MonoDevelop.UnitTesting.XUnit;
 
 namespace MonoDevelop.XUnit
 {
-    /// <summary>
-    /// Loads data into XUnitAssemblyTestSuite using either xUnit.NET tools
-    /// or cache when possible. This class intended to be instantiated only
-    /// once and loads data asynchronously using internal queue.
-    /// </summary>
-    public class XUnitTestLoader
+	/// <summary>
+	/// Loads data into XUnitAssemblyTestSuite using either xUnit.NET tools
+	/// or cache when possible. This class intended to be instantiated only
+	/// once and loads data asynchronously using internal queue.
+	/// </summary>
+	public class XUnitTestLoader
 	{
 		bool isRunning = false;
 		Queue<XUnitAssemblyTestSuite> loadQueue = new Queue<XUnitAssemblyTestSuite> ();

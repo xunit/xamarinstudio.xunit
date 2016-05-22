@@ -267,5 +267,11 @@ namespace MonoDevelop.XUnit
 		}
 	}
 
+	public enum XUnitVersion
+	{
+		Unknown,
+		XUnit,
+		XUnit2
+	}
 }
 

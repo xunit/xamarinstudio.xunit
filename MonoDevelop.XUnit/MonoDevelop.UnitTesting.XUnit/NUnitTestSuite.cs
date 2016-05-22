@@ -28,70 +28,87 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using MonoDevelop.Core.Execution;
+using MonoDevelop.XUnit;
+
 namespace MonoDevelop.UnitTesting.XUnit
 {
-    class XUnitTestSuite : UnitTestGroup
-    {
-        XunitTestInfo testInfo;
-        XUnitAssemblyTestSuite rootSuite;
-        string fullName;
+	/// <summary>
+	/// Non-leaf node in the test tree. When executed listens for it's children
+	/// events using execution session.
+	/// </summary>
+	internal class XUnitTestSuite : UnitTestGroup, IExecutableTest
+	{
+		XUnitAssemblyTestSuite rootSuite;
+		XUnitTestExecutor executor;
+		public XUnitTestInfo TestInfo { get; private set; }
 
-        public XUnitTestSuite (XUnitAssemblyTestSuite rootSuite, XunitTestInfo tinfo) : base (tinfo.Name)
-        {
-            fullName = !string.IsNullOrEmpty (tinfo.PathName) ? tinfo.PathName + "." + tinfo.Name : tinfo.Name;
-            this.testInfo = tinfo;
-            this.rootSuite = rootSuite;
-            this.TestId = tinfo.TestId;
-        }
+		XUnitExecutionSession session;
 
-        public override bool HasTests {
-            get {
-                return true;
-            }
-        }
+		public XUnitTestSuite(XUnitAssemblyTestSuite rootSuite, XUnitTestExecutor executor, XUnitTestInfo testInfo) : base(testInfo.Name)
+		{
+			this.rootSuite = rootSuite;
+			TestInfo = testInfo;
+			this.executor = executor;
+		}
 
-        public string ClassName {
-            get { return fullName; }
-        }
+		public XUnitExecutionSession CreateExecutionSession(bool reportToMonitor)
+		{
+			session = new XUnitExecutionSession(this, reportToMonitor);
 
-        protected override UnitTestResult OnRun (TestContext testContext)
-        {
-            return rootSuite.RunUnitTest (this, fullName, fullName, null, testContext);
-        }
+			foreach (var test in Tests)
+			{
+				var xunitTest = test as IExecutableTest;
+				if (xunitTest != null)
+				{
+					var childSession = xunitTest.CreateExecutionSession(reportToMonitor);
+					session.AddChildSession(childSession);
+				}
+			}
 
-        protected override bool OnCanRun (Core.Execution.IExecutionHandler executionContext)
-        {
-            return rootSuite.CanRun (executionContext);
-        }
+			return session;
+		}
 
-        protected override void OnCreateTests ()
-        {
-            if (testInfo.Tests == null)
-                return;
+		public override bool HasTests
+		{
+			get
+			{
+				return true;
+			}
+		}
 
-            foreach (XunitTestInfo test in testInfo.Tests) {
-                UnitTest newTest;
-                if (test.Tests != null)
-                    newTest = new XUnitTestSuite (rootSuite, test);
-                else
-                    newTest = new XUnitTestCase (rootSuite, test, ClassName);
-                newTest.FixtureTypeName = test.FixtureTypeName;
-                newTest.FixtureTypeNamespace = test.FixtureTypeNamespace;
-                Tests.Add (newTest);
-            }
-        }
+		protected override void OnCreateTests()
+		{
+			if (TestInfo.Tests == null)
+				return;
 
-        public override SourceCodeLocation SourceCodeLocation {
-            get {
-                UnitTest p = Parent;
-                while (p != null) {
-                    XUnitAssemblyTestSuite root = p as XUnitAssemblyTestSuite;
-                    if (root != null)
-                        return root.GetSourceCodeLocation (this);
-                    p = p.Parent;
-                }
-                return null;
-            }
-        }
-    }
+			foreach (var info in TestInfo.Tests)
+			{
+				UnitTest test;
+				if (info.Tests != null)
+					test = new XUnitTestSuite(rootSuite, executor, info);
+				else
+					test = new XUnitTestCase(rootSuite, executor, info);
+				Tests.Add(test);
+			}
+		}
+
+		protected override bool OnCanRun(IExecutionHandler executionContext)
+		{
+			return rootSuite.CanRun(executionContext);
+		}
+
+		protected override UnitTestResult OnRun(TestContext testContext)
+		{
+			return executor.RunTestSuite(rootSuite, this, testContext);
+		}
+
+		public override SourceCodeLocation SourceCodeLocation
+		{
+			get
+			{
+				return rootSuite.GetSourceCodeLocation(this);
+			}
+		}
+	}
 }

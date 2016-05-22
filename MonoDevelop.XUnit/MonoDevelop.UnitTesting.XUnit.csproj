@@ -32,14 +32,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AddinInfo.cs" />
     <Compile Include="MonoDevelop.UnitTesting.XUnit\NUnitAssemblyTestSuite.cs" />
-    <Compile Include="MonoDevelop.UnitTesting.XUnit\ExternalTestRunner.cs" />
-    <Compile Include="MonoDevelop.UnitTesting.XUnit\RemoteTestResult.cs" />
     <Compile Include="MonoDevelop.UnitTesting.XUnit\NUnitTestSuite.cs" />
     <Compile Include="MonoDevelop.UnitTesting.XUnit\NUnitTestCase.cs" />
-    <Compile Include="MonoDevelop.UnitTesting.XUnit\TcpTestListener.cs" />
     <Compile Include="MonoDevelop.UnitTesting.XUnit\SystemTestProvider.cs" />
     <Compile Include="MonoDevelop.UnitTesting.XUnit\NUnitProjectTestSuite.cs" />
     <Compile Include="MonoDevelop.UnitTesting.XUnit\NUnitSourceCodeLocationFinder.cs" />
+    <Compile Include="XUnitExecutionSession.cs" />
+    <Compile Include="XUnitTestExecutor.cs" />
+    <Compile Include="XUnitTestInfo.cs" />
+    <Compile Include="XUnitTestInfoCache.cs" />
+    <Compile Include="XUnitTestLoader.cs" />
+    <Compile Include="XUnitTestRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />

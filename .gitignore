@@ -28,3 +28,6 @@ T4MVC.cs
 *.jrs
 *.ide
 *.mpack
+.DS_Store
+MonoDevelop.XUnit/.DS_Store
+MonoDevelop.XUnit/MonoDevelop.UnitTesting.XUnit/.DS_Store
