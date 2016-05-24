@@ -2,11 +2,11 @@
 <Template>
 	
 	<TemplateConfiguration>
-		<_Name>xUnit.net v1 Test</_Name>
+		<_Name>xUnit.net v2 Test</_Name>
 		<Icon>md-file-unit-test</Icon>
 		<_Category>xUnit.net</_Category>
 		<LanguageName>C#</LanguageName>
-		<_Description>Creates an xUnit.net v1 Test.</_Description>
+		<_Description>Creates an xUnit.net v2 Test.</_Description>
 		<DefaultFilename>XUnitTestClass</DefaultFilename>
 	</TemplateConfiguration>
 	
@@ -20,7 +20,6 @@
 						<Imports>
 							<NamespaceImport Namespace="System" />
 							<NamespaceImport Namespace="Xunit" />
-							<NamespaceImport Namespace="Xunit.Extensions" />
 						</Imports>
 					</Namespace>
 					<Namespace Name="${Namespace}">

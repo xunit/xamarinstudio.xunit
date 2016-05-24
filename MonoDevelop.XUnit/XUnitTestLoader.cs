@@ -25,13 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.NUnit;
 using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using System.Linq;
+using MonoDevelop.UnitTesting.XUnit;
 
 namespace MonoDevelop.XUnit
 {

@@ -24,8 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.NUnit;
 using System.Collections.Generic;
+using MonoDevelop.UnitTesting;
 
 namespace MonoDevelop.XUnit
 {

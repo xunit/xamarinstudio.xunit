@@ -1,12 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.XUnit", "MonoDevelop.XUnit\MonoDevelop.XUnit.csproj", "{749EF588-C012-4A59-AA3C-B7722AAC0A09}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.UnitTesting.XUnit", "MonoDevelop.XUnit\MonoDevelop.UnitTesting.XUnit.csproj", "{749EF588-C012-4A59-AA3C-B7722AAC0A09}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5F83F441-FEED-456D-BD01-D0428724A990}"
 	ProjectSection(SolutionItems) = preProject
 		addin-project.xml = addin-project.xml
-		addin-project6.xml = addin-project6.xml
 		README.md = README.md
 		MonoDevelop.XUnit\CONTRIBUTING.md = MonoDevelop.XUnit\CONTRIBUTING.md
 	EndProjectSection

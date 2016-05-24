@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.NUnit;
 using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Core;
@@ -34,6 +33,8 @@ using MonoDevelop.Projects;
 using System.Linq;
 using System.IO;
 using System.Runtime.Remoting;
+using MonoDevelop.UnitTesting.XUnit;
+using MonoDevelop.UnitTesting;
 
 namespace MonoDevelop.XUnit
 {
@@ -41,7 +42,7 @@ namespace MonoDevelop.XUnit
 	/// Wrapper around XUnitTestRunner. It extracts all information needed to
 	/// run tests, then dispatches rusults back to tests.
 	/// </summary>
-	public class XUnitTestExecutor
+	internal class XUnitTestExecutor
 	{
 		public UnitTestResult RunTestCase (XUnitAssemblyTestSuite rootSuite, XUnitTestCase testCase, TestContext context)
 		{
@@ -85,8 +86,11 @@ namespace MonoDevelop.XUnit
 				var executionListener = new RemoteExecutionListener (new LocalExecutionListener (context, testCases));
 				RemotingServices.Marshal (executionListener, null, typeof (IXUnitExecutionListener));
 
-				XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(XUnitTestRunner),
-					context.ExecutionContext, rootSuite.SupportAssemblies);
+				//XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(XUnitTestRunner),
+				//	context.ExecutionContext, rootSuite.SupportAssemblies);
+
+				XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject(typeof(XUnitTestRunner),
+					true, rootSuite.SupportAssemblies);
 
 				try {
 					runner.Execute (rootSuite.AssemblyPath, testCases.Select (tc => tc.TestInfo).ToArray (), executionListener);
@@ -140,7 +144,7 @@ namespace MonoDevelop.XUnit
 		}
 	}
 
-	public class LocalExecutionListener: IXUnitExecutionListener
+	internal class LocalExecutionListener: IXUnitExecutionListener
 	{
 		TestContext context;
 		Dictionary<string, XUnitTestCase> lookup;
@@ -155,7 +159,8 @@ namespace MonoDevelop.XUnit
 
 		public bool IsCancelRequested {
 			get {
-				return context.Monitor.IsCancelRequested;
+				return context.Monitor.CancellationToken.IsCancellationRequested;
+				//return context.Monitor.IsCancelRequested;
 			}
 		}
 

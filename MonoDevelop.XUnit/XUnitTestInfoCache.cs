@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using MonoDevelop.UnitTesting.XUnit;
 
 namespace MonoDevelop.XUnit
 {
