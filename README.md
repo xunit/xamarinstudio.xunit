@@ -14,4 +14,5 @@ Installation
 Extra Note
 ----------
 * If you install 5.x version of this add-in in MonoDevelop/Xamarin Studio 5.x and then upgrade the IDE to 6.x, please use Add-in Manager to upgrade this add-in to 6.x version.
+* The add-in can be manually downloaded from [here](http://addins.monodevelop.com/Project/Index/220) if you don't want to use Add-in Manager.
 * Anyone who wants to contribute to this project, please check [the contributing guide](https://github.com/xunit/xamarinstudio.xunit/blob/master/CONTRIBUTING.md) to see how to set up the development environment.
