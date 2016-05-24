@@ -79,7 +79,9 @@ namespace MonoDevelop.XUnit
 			var project = entry as DotNetProject;
 			if (project != null) {
 				foreach (var r in project.References) {
-					if (r.Reference == "xunit")
+					if (r.Reference == "xunit") // xUnit.Net 1.x
+						return new XUnitProjectTestSuite (project);
+					if (r.Reference.StartsWith ("xunit.core")) // xUnit.Net 2.x
 						return new XUnitProjectTestSuite (project);
 				}
 			}

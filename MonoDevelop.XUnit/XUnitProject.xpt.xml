@@ -3,10 +3,10 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>xUnit.net v1 Library Project</_Name>
+		<_Name>xUnit.net v2 Library Project</_Name>
 		<_Category>xUnit.net</_Category>
 		<Icon>md-project|res:project-nunit-overlay-light-32.png</Icon>
-		<_Description>Creates an xUnit.net library</_Description>
+		<_Description>Creates an xUnit.net v2 library</_Description>
 		<LanguageName>C#</LanguageName>
 		<DefaultFilename>XUnitProject</DefaultFilename>
 	</TemplateConfiguration>
@@ -30,8 +30,10 @@
 			</References>
 
 			<Packages>
-				<Package ID="xunit" Version="1.9.2" />
-				<Package ID="xunit.extensions" Version="1.9.2" />
+				<Package ID="xunit" Version="2.1.0" />
+				<Package ID="xunit.abstractions" Version="2.0.0" />
+				<Package ID="xunit.assert" Version="2.1.0" />
+				<Package ID="xunit.core" Version="2.1.0" />
 			</Packages>
 
 			<Files>
@@ -42,7 +44,6 @@
 								<Imports>
 									<NamespaceImport Namespace="System" />
 									<NamespaceImport Namespace="Xunit" />
-									<NamespaceImport Namespace="Xunit.Extensions" />
 								</Imports>
 							</Namespace>
 							<Namespace Name="${Namespace}">
