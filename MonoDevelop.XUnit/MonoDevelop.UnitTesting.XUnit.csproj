@@ -52,6 +52,9 @@
     <EmbeddedResource Include="templates\XUnitTestClass.xft.xml">
       <LogicalName>XUnitTestClass.xft.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\XUnitProjectVBNet.xpt.xml">
+      <LogicalName>XUnitProjectVBNet.xpt.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MonoDevelop.Addins.0.3.1\build\net40\MonoDevelop.Addins.targets" Condition="Exists('..\packages\MonoDevelop.Addins.0.3.1\build\net40\MonoDevelop.Addins.targets')" />

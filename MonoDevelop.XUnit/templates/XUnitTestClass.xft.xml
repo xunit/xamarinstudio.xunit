@@ -5,7 +5,7 @@
 		<_Name>xUnit.net v2 Test</_Name>
 		<Icon>md-file-unit-test</Icon>
 		<_Category>xUnit.net</_Category>
-		<LanguageName>C#</LanguageName>
+		<LanguageName>C#,VBNet</LanguageName>
 		<_Description>Creates an xUnit.net v2 Test.</_Description>
 		<DefaultFilename>XUnitTestClass</DefaultFilename>
 	</TemplateConfiguration>
@@ -13,7 +13,9 @@
 	<TemplateFiles>
 		<CodeDomFile>
 			<AssemblyReference>xunit</AssemblyReference>
-			<AssemblyReference>xunit.extensions</AssemblyReference>
+			<AssemblyReference>xunit.abstractions</AssemblyReference>
+			<AssemblyReference>xunit.assert</AssemblyReference>
+			<AssemblyReference>xunit.core</AssemblyReference>
 			<CompileUnit>
 				<Namespaces>
 					<Namespace Name="">

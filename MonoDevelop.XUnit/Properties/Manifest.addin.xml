@@ -10,7 +10,8 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id = "XUnitProject" resource = "XUnitProject.xpt.xml"/>
+		<ProjectTemplate id = "MonoDevelop.CSharp.XUnitProject" resource = "XUnitProject.xpt.xml"/>
+		<ProjectTemplate id = "MonoDevelop.VBNet.XUnitProject" resource = "XUnitProjectVBNet.xpt.xml"/>
 	</Extension>
 
   	<Extension path = "/MonoDevelop/Ide/FileTemplates">
