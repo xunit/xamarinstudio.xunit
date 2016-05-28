@@ -1,11 +1,10 @@
-﻿using System;
-using Mono.Addins;
+﻿using Mono.Addins;
 using Mono.Addins.Description;
 
 [assembly:Addin (
 	"MonoDevelop.XUnit2", 
 	Namespace = "MonoDevelop.XUnit",
-	Version = "0.6.0"
+	Version = "0.6.1"
 )]
 
 [assembly:AddinName ("xUnit.NET 2 testing framework support")]
