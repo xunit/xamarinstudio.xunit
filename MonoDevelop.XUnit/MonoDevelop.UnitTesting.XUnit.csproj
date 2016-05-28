@@ -36,7 +36,6 @@
     <Compile Include="MonoDevelop.UnitTesting.XUnit\NUnitTestCase.cs" />
     <Compile Include="MonoDevelop.UnitTesting.XUnit\SystemTestProvider.cs" />
     <Compile Include="MonoDevelop.UnitTesting.XUnit\NUnitProjectTestSuite.cs" />
-    <Compile Include="MonoDevelop.UnitTesting.XUnit\NUnitSourceCodeLocationFinder.cs" />
     <Compile Include="XUnitExecutionSession.cs" />
     <Compile Include="XUnitTestExecutor.cs" />
     <Compile Include="XUnitTestInfo.cs" />

@@ -86,11 +86,13 @@ namespace MonoDevelop.XUnit
 				var executionListener = new RemoteExecutionListener (new LocalExecutionListener (context, testCases));
 				RemotingServices.Marshal (executionListener, null, typeof (IXUnitExecutionListener));
 
-				//XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(XUnitTestRunner),
-				//	context.ExecutionContext, rootSuite.SupportAssemblies);
+                //XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(XUnitTestRunner),
+                //	context.ExecutionContext, rootSuite.SupportAssemblies);
 
-				XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject(typeof(XUnitTestRunner),
-					true, rootSuite.SupportAssemblies);
+                var console = context.ExecutionContext.ConsoleFactory.CreateConsole();
+
+                XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof (XUnitTestRunner),
+                                                                                                             true, rootSuite.SupportAssemblies, console);
 
 				try {
 					runner.Execute (rootSuite.AssemblyPath, testCases.Select (tc => tc.TestInfo).ToArray (), executionListener);

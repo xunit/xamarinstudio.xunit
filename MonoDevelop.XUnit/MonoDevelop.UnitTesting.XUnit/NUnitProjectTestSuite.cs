@@ -28,134 +28,152 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-
-using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using System;
-using ProjectReference = MonoDevelop.Projects.ProjectReference;
-using System.Threading.Tasks;
-using MonoDevelop.XUnit;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Projects;
+using MonoDevelop.XUnit;
+using ProjectReference = MonoDevelop.Projects.ProjectReference;
 
 namespace MonoDevelop.UnitTesting.XUnit
 {
-	/// <summary>
-	/// Root test node for every project that has references to xunit dlls
-	/// </summary>
-	public class XUnitProjectTestSuite : XUnitAssemblyTestSuite
-	{
-		DotNetProject project;
-		string resultsPath;
-		string storeId;
+    /// <summary>
+    /// Root test node for every project that has references to xunit dlls.
+    /// </summary>
+    public class XUnitProjectTestSuite : XUnitAssemblyTestSuite
+    {
+        DotNetProject project;
+        string resultsPath;
+        string storeId;
 
-		public XUnitProjectTestSuite(DotNetProject project) : base(project.Name, project)
-		{
-			this.project = project;
-			storeId = Path.GetFileName(project.FileName);
-			resultsPath = GetTestResultsDirectory(project.BaseDirectory);
-			ResultsStore = new BinaryResultsStore(resultsPath, storeId);
-			project.NameChanged += new SolutionItemRenamedEventHandler(OnProjectRenamed);
-			IdeApp.ProjectOperations.EndBuild += new BuildEventHandler(OnProjectBuilt);
-		}
+        public XUnitProjectTestSuite (DotNetProject project) : base (project.Name, project)
+        {
+            this.project = project;
+            storeId = Path.GetFileName (project.FileName);
+            resultsPath = GetTestResultsDirectory (project.BaseDirectory);
+            ResultsStore = new BinaryResultsStore (resultsPath, storeId);
+            project.NameChanged += OnProjectRenamed;
+            IdeApp.ProjectOperations.EndBuild += OnProjectBuilt;
+        }
 
-		public override string AssemblyPath
-		{
-			get
-			{
-				return project.GetOutputFileName(IdeApp.Workspace.ActiveConfiguration);
-			}
-		}
+        /// <summary>
+        /// Gets the assembly path.
+        /// </summary>
+        /// <value>The assembly path.</value>
+        public override string AssemblyPath {
+            get {
+                return project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
+            }
+        }
 
-		public override string CachePath
-		{
-			get
-			{
-				return Path.Combine(resultsPath, storeId + ".xunit-test-cache");
-			}
-		}
+        /// <summary>
+        /// Gets the cache path.
+        /// </summary>
+        /// <value>The cache path.</value>
+        public override string CachePath {
+            get {
+                return Path.Combine (resultsPath, storeId + ".xunit-test-cache");
+            }
+        }
 
-		public override IList<string> SupportAssemblies
-		{
-			get
-			{
-				return project.References // references that are not copied localy
-					.Where(r => !r.LocalCopy && r.ReferenceType != ReferenceType.Package)
-					.SelectMany(r => r.GetReferencedFileNames(IdeApp.Workspace.ActiveConfiguration)).ToList();
-			}
-		}
+        /// <summary>
+        /// Gets the support assemblies for the project.
+        /// </summary>
+        /// <value>The support assemblies.</value>
+        public override IList<string> SupportAssemblies {
+            get {
+                return project.References // references that are not copied localy
+                    .Where (r => !r.LocalCopy && r.ReferenceType != ReferenceType.Package)
+                    .SelectMany (r => r.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration)).ToList ();
+            }
+        }
 
-		public static XUnitProjectTestSuite CreateTest(DotNetProject project)
-		{
-			if (!project.ParentSolution.GetConfiguration(IdeApp.Workspace.ActiveConfiguration).BuildEnabledForItem(project))
-				return null;
+        /// <summary>
+        /// Creates the test.
+        /// </summary>
+        /// <returns>The test.</returns>
+        /// <param name="project">Project.</param>
+        /// <remarks>This is where all test cases are located.</remarks>
+		public static XUnitProjectTestSuite CreateTest (DotNetProject project)
+        {
+            if (!project.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration).BuildEnabledForItem (project))
+                return null;
 
-			foreach (var p in project.References)
-			{
-				var nv = GetXUnitVersion(p);
-				if (nv != null)
-					return new XUnitProjectTestSuite(project);
-			}
-			return null;
-		}
+            foreach (var p in project.References) {
+                var nv = GetXUnitVersion (p);
+                if (nv != null)
+                    return new XUnitProjectTestSuite (project);
+            }
+            return null;
+        }
 
-		public static bool IsXUnitReference(ProjectReference p)
-		{
-			return GetXUnitVersion(p).HasValue;
-		}
+        /// <summary>
+        /// Tests if a reference is from xunit.net.
+        /// </summary>
+        /// <returns><code>true</code> if the reference is from xunit.net. Otherwise, <code>false</code>.</returns>
+        /// <param name="p">Project reference.</param>
+		public static bool IsXUnitReference (ProjectReference p)
+        {
+            return GetXUnitVersion (p).HasValue;
+        }
 
-		public static XUnitVersion? GetXUnitVersion(ProjectReference p)
-		{
-			if (p.Reference == "xunit") // xUnit.Net 1.x
-				return XUnitVersion.XUnit;
-			if (p.Reference.IndexOf("xunit.core", StringComparison.OrdinalIgnoreCase) != -1) // xUnit.Net 2.x
-				return XUnitVersion.XUnit2;
+        /// <summary>
+        /// Gets the xunit.net version from the reference.
+        /// </summary>
+        /// <returns>The xunit.net version.</returns>
+        /// <param name="p">Project reference.</param>
+		public static XUnitVersion? GetXUnitVersion (ProjectReference p)
+        {
+            if (p.Reference == "xunit") // xUnit.Net 1.x
+                return XUnitVersion.XUnit;
+            if (p.Reference.IndexOf ("xunit.core", StringComparison.OrdinalIgnoreCase) != -1) // xUnit.Net 2.x
+                return XUnitVersion.XUnit2;
 
-			return null;
-		}
+            return null;
+        }
 
-		protected override SourceCodeLocation GetSourceCodeLocation(string fixtureTypeNamespace, string fixtureTypeName, string testName)
-		{
-			if (string.IsNullOrEmpty(fixtureTypeName) || string.IsNullOrEmpty(fixtureTypeName))
-				return null;
-			var task = XUnitSourceCodeLocationFinder.TryGetSourceCodeLocationAsync(project, fixtureTypeNamespace, fixtureTypeName, testName);
-			if (!task.Wait(2000))
-				return null;
-			return task.Result;
-		}
+        protected override SourceCodeLocation GetSourceCodeLocation (string fixtureTypeNamespace, string fixtureTypeName, string testName)
+        {
+            if (string.IsNullOrEmpty (fixtureTypeName) || string.IsNullOrEmpty (fixtureTypeName))
+                return null;
+            var task = NUnitSourceCodeLocationFinder.TryGetSourceCodeLocationAsync (project, fixtureTypeNamespace, fixtureTypeName, testName);
+            if (!task.Wait (2000))
+                return null;
+            return task.Result;
+        }
 
+        void OnProjectRenamed (object sender, SolutionItemRenamedEventArgs e)
+        {
+            UnitTestGroup parent = Parent as UnitTestGroup;
+            if (parent != null)
+                parent.UpdateTests ();
+        }
 
-		void OnProjectRenamed(object sender, SolutionItemRenamedEventArgs e)
-		{
-			UnitTestGroup parent = Parent as UnitTestGroup;
-			if (parent != null)
-				parent.UpdateTests();
-		}
+        void OnProjectBuilt (object s, BuildEventArgs args)
+        {
+            if (RefreshRequired)
+                UpdateTests ();
+        }
 
-		void OnProjectBuilt(object s, BuildEventArgs args)
-		{
-			if (RefreshRequired)
-				UpdateTests();
-		}
+        public override void Dispose ()
+        {
+            project.NameChanged -=  OnProjectRenamed;
+            IdeApp.ProjectOperations.EndBuild -= OnProjectBuilt;
+            base.Dispose ();
+        }
 
-		public override void Dispose()
-		{
-			project.NameChanged -= new SolutionItemRenamedEventHandler(OnProjectRenamed);
-			IdeApp.ProjectOperations.EndBuild -= new BuildEventHandler(OnProjectBuilt);
-			base.Dispose();
-		}
+        static string GetTestResultsDirectory (string baseDirectory)
+        {
+            var cacheDir = TypeSystemService.GetCacheDirectory (baseDirectory, true);
+            var resultsDir = Path.Combine (cacheDir, "test-results");
 
-		static string GetTestResultsDirectory(string baseDirectory)
-		{
-			var cacheDir = TypeSystemService.GetCacheDirectory(baseDirectory, true);
-			var resultsDir = Path.Combine(cacheDir, "test-results");
+            if (!Directory.Exists (resultsDir))
+                Directory.CreateDirectory (resultsDir);
 
-			if (!Directory.Exists(resultsDir))
-				Directory.CreateDirectory(resultsDir);
-
-			return resultsDir;
-		}
-	}
+            return resultsDir;
+        }
+    }
 }

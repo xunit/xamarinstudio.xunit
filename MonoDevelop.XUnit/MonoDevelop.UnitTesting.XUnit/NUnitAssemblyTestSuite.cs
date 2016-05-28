@@ -29,19 +29,13 @@
 //
 
 using System;
-using System.IO;
-using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
-using System.Runtime.Serialization.Formatters.Binary;
-
-using MonoDevelop.Projects;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using System.Xml.Linq;
-using System.Linq;
-using System.Globalization;
-using System.Threading.Tasks;
+using MonoDevelop.Projects;
 using MonoDevelop.XUnit;
 
 namespace MonoDevelop.UnitTesting.XUnit
