@@ -67,7 +67,8 @@ namespace MonoDevelop.XUnit
 							Id = testCase.UniqueID,
 							Type = testCase.TestMethod.TestClass.Class.Name,
 							Method = testCase.TestMethod.Method.Name,
-							DisplayName = testCase.DisplayName
+							DisplayName = testCase.DisplayName,
+							Args = testCase.TestMethodArguments
 						});
 					}
 				}
@@ -103,6 +104,7 @@ namespace MonoDevelop.XUnit
 					testInfo.Type = firstItem.Type;
 					testInfo.Method = firstItem.Method;
 					testInfo.Name = firstItem.Name;
+					testInfo.Args = firstItem.Args;
 					return;
 				}
 			}
@@ -155,6 +157,7 @@ namespace MonoDevelop.XUnit
 			public string Type;
 			public string Method;
 			public string DisplayName;
+			public object[] Args;
 
 			string name;
 			public string Name {
@@ -171,11 +174,24 @@ namespace MonoDevelop.XUnit
 
 			void parseName ()
 			{
-				// TODO: fix for xunit v2 where each theory is a separate test case
-				string[] typeParts = Type.Split ('.');
-				nameParts = new string [typeParts.Length + 1];
-				typeParts.CopyTo (nameParts, 0);
-				nameParts [typeParts.Length] = Method;
+				// this is [theory], xunit v2 where each theory is a separate test case
+				// TODO what if [Theory] without [InlineData]?
+				if (Args!=null && Args.Length > 0)
+				{
+					string[] typeParts = Type.Split('.');
+					nameParts = new string[typeParts.Length + 2];
+					typeParts.CopyTo(nameParts, 0);
+					nameParts[typeParts.Length] = DisplayName;
+					nameParts[typeParts.Length+1] = Method;
+				}
+				// this is [fact]
+				else
+				{
+					string[] typeParts = Type.Split('.');
+					nameParts = new string[typeParts.Length + 1];
+					typeParts.CopyTo(nameParts, 0);
+					nameParts[typeParts.Length] = Method;
+				}
 			}
 
 			string[] nameParts;
