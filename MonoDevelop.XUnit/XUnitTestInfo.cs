@@ -40,5 +40,6 @@ namespace MonoDevelop.XUnit
 		public string Type;
 		public string Method;
 		public XUnitTestInfo[] Tests;
+		public object[] Args;
 	}
 }
