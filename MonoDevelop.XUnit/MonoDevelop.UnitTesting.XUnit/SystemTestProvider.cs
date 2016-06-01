@@ -31,65 +31,65 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.UnitTesting.XUnit
 {
-    /// <summary>
-    /// xunit.net test provider.
-    /// </summary>
-    /// <remarks>This is where the xunit.net extension hooks itself to MonoDevelop/Xamarin Studio.</remarks>
-    public class SystemTestProvider : ITestProvider
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:MonoDevelop.UnitTesting.XUnit.SystemTestProvider"/> class.
-        /// </summary>
-        public SystemTestProvider ()
-        {
-            IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChanged;
-            IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChanged;
-        }
+	/// <summary>
+	/// xunit.net test provider.
+	/// </summary>
+	/// <remarks>This is where the xunit.net extension hooks itself to MonoDevelop/Xamarin Studio.</remarks>
+	public class SystemTestProvider : ITestProvider
+	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:MonoDevelop.UnitTesting.XUnit.SystemTestProvider"/> class.
+		/// </summary>
+		public SystemTestProvider ()
+		{
+			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChanged;
+			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChanged;
+		}
 
-        /// <summary>
-        /// Creates the unit test.
-        /// </summary>
-        /// <returns>The unit test.</returns>
-        /// <param name="entry">Entry.</param>
+		/// <summary>
+		/// Creates the unit test.
+		/// </summary>
+		/// <returns>The unit test.</returns>
+		/// <param name="entry">Entry.</param>
 		/// <remarks>
 		/// This is where unit testing integration starts.
 		/// </remarks>
-        public UnitTest CreateUnitTest (WorkspaceObject entry)
-        {
-            UnitTest test = null;
+		public UnitTest CreateUnitTest (WorkspaceObject entry)
+		{
+			UnitTest test = null;
 
-            var dotnet = entry as DotNetProject;
-            if (dotnet != null)
-                test = XUnitProjectTestSuite.CreateTest (dotnet);
+			var dotnet = entry as DotNetProject;
+			if (dotnet != null)
+				test = XUnitProjectTestSuite.CreateTest (dotnet);
 
-            UnitTestGroup grp = test as UnitTestGroup;
-            if (grp != null && !grp.HasTests) {
-                test.Dispose ();
-                return null;
-            }
+			UnitTestGroup grp = test as UnitTestGroup;
+			if (grp != null && !grp.HasTests) {
+				test.Dispose ();
+				return null;
+			}
 
-            return test;
-        }
+			return test;
+		}
 
-        void OnReferenceChanged (object s, ProjectReferenceEventArgs args)
-        {
-            if (XUnitProjectTestSuite.IsXUnitReference (args.ProjectReference))
-                UnitTestService.ReloadTests (); // trigger a panel refresh.
-        }
+		void OnReferenceChanged (object s, ProjectReferenceEventArgs args)
+		{
+			if (XUnitProjectTestSuite.IsXUnitReference (args.ProjectReference))
+				UnitTestService.ReloadTests (); // trigger a panel refresh.
+		}
 
-        /// <summary>
-        /// Releases all resource used by the <see cref="T:MonoDevelop.UnitTesting.XUnit.SystemTestProvider"/> object.
-        /// </summary>
-        /// <remarks>Call <see cref="Dispose"/> when you are finished using the
-        /// <see cref="T:MonoDevelop.UnitTesting.XUnit.SystemTestProvider"/>. The <see cref="Dispose"/> method leaves
-        /// the <see cref="T:MonoDevelop.UnitTesting.XUnit.SystemTestProvider"/> in an unusable state. After calling
-        /// <see cref="Dispose"/>, you must release all references to the
-        /// <see cref="T:MonoDevelop.UnitTesting.XUnit.SystemTestProvider"/> so the garbage collector can reclaim the
-        /// memory that the <see cref="T:MonoDevelop.UnitTesting.XUnit.SystemTestProvider"/> was occupying.</remarks>
-        public void Dispose ()
-        {
-            IdeApp.Workspace.ReferenceAddedToProject -= OnReferenceChanged;
-            IdeApp.Workspace.ReferenceRemovedFromProject -= OnReferenceChanged;
-        }
-    }
+		/// <summary>
+		/// Releases all resource used by the <see cref="T:MonoDevelop.UnitTesting.XUnit.SystemTestProvider"/> object.
+		/// </summary>
+		/// <remarks>Call <see cref="Dispose"/> when you are finished using the
+		/// <see cref="T:MonoDevelop.UnitTesting.XUnit.SystemTestProvider"/>. The <see cref="Dispose"/> method leaves
+		/// the <see cref="T:MonoDevelop.UnitTesting.XUnit.SystemTestProvider"/> in an unusable state. After calling
+		/// <see cref="Dispose"/>, you must release all references to the
+		/// <see cref="T:MonoDevelop.UnitTesting.XUnit.SystemTestProvider"/> so the garbage collector can reclaim the
+		/// memory that the <see cref="T:MonoDevelop.UnitTesting.XUnit.SystemTestProvider"/> was occupying.</remarks>
+		public void Dispose ()
+		{
+			IdeApp.Workspace.ReferenceAddedToProject -= OnReferenceChanged;
+			IdeApp.Workspace.ReferenceRemovedFromProject -= OnReferenceChanged;
+		}
+	}
 }

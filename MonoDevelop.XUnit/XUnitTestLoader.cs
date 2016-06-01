@@ -40,8 +40,8 @@ namespace MonoDevelop.XUnit
 	/// </summary>
 	public class XUnitTestLoader
 	{
-		bool isRunning = false;
-		Queue<XUnitAssemblyTestSuite> loadQueue = new Queue<XUnitAssemblyTestSuite> ();
+		bool isRunning;
+		readonly Queue<XUnitAssemblyTestSuite> loadQueue = new Queue<XUnitAssemblyTestSuite> ();
 
 		/// <summary>
 		/// Asyncs the load test case info.
@@ -114,13 +114,12 @@ namespace MonoDevelop.XUnit
 					LoggingService.LogError (ex.ToString ());
 				}
 
-				using (var runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(XUnitTestRunner), false)) {
-					testInfo = runner.GetTestInfo (testSuite.AssemblyPath, testSuite.SupportAssemblies.ToArray());
+				using (var runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof (XUnitTestRunner), false)) {
+					testInfo = runner.GetTestInfo (testSuite.AssemblyPath, testSuite.SupportAssemblies.ToArray ());
 				}
 
 				testSuite.OnTestSuiteLoaded (testInfo);
 			}
 		}
 	}
-
 }

@@ -75,7 +75,5 @@
   <ItemGroup>
     <Folder Include="templates\" />
     <Folder Include="MonoDevelop.UnitTesting.XUnit\" />
-    <Folder Include="XUnitRunner\" />
-    <Folder Include="XUnit2Runner\" />
   </ItemGroup>
 </Project>
