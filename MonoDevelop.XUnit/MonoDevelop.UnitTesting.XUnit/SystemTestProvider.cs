@@ -51,6 +51,9 @@ namespace MonoDevelop.UnitTesting.XUnit
         /// </summary>
         /// <returns>The unit test.</returns>
         /// <param name="entry">Entry.</param>
+		/// <remarks>
+		/// This is where unit testing integration starts.
+		/// </remarks>
         public UnitTest CreateUnitTest (WorkspaceObject entry)
         {
             UnitTest test = null;

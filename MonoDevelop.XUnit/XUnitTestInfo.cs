@@ -25,13 +25,15 @@
 // THE SOFTWARE.
 
 using System;
-using System.Reflection;
-using Xunit;
-using Xunit.Abstractions;
-using System.Collections.Generic;
 
 namespace MonoDevelop.XUnit
 {
+	/// <summary>
+	/// xunit test info.
+	/// </summary>
+	/// <remarks>
+	/// It is serializable because it goes through process boundary.
+	/// </remarks>
 	[Serializable]
 	public class XUnitTestInfo
 	{

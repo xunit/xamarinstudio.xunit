@@ -135,6 +135,16 @@ namespace MonoDevelop.UnitTesting.XUnit
             return null;
         }
 
+		/// <summary>
+		/// Gets the source code location.
+		/// </summary>
+		/// <returns>The source code location.</returns>
+		/// <param name="fixtureTypeNamespace">Fixture type namespace.</param>
+		/// <param name="fixtureTypeName">Fixture type name.</param>
+		/// <param name="testName">Test name.</param>
+		/// <remarks>
+		/// The NUnit source code locator is reused.
+		/// </remarks>
         protected override SourceCodeLocation GetSourceCodeLocation (string fixtureTypeNamespace, string fixtureTypeName, string testName)
         {
             if (string.IsNullOrEmpty (fixtureTypeName) || string.IsNullOrEmpty (fixtureTypeName))
@@ -160,7 +170,7 @@ namespace MonoDevelop.UnitTesting.XUnit
 
         public override void Dispose ()
         {
-            project.NameChanged -=  OnProjectRenamed;
+            project.NameChanged -= OnProjectRenamed;
             IdeApp.ProjectOperations.EndBuild -= OnProjectBuilt;
             base.Dispose ();
         }

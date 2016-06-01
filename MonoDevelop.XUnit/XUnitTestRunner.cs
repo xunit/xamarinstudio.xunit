@@ -52,6 +52,12 @@ namespace MonoDevelop.XUnit
 				Assembly.LoadFrom (assembly);
 		}
 
+		/// <summary>
+		/// Builds the test info.
+		/// </summary>
+		/// <returns>The test info.</returns>
+		/// <param name="assembly">Assembly.</param>
+		/// <remarks>It uses xunit built-in function to load test case info from the test assembly.</remarks>
 		XUnitTestInfo BuildTestInfo (string assembly)
 		{
 			var infos = new List<TestCaseInfo> ();
@@ -87,6 +93,13 @@ namespace MonoDevelop.XUnit
 			return testInfo;
 		}
 
+		/// <summary>
+		/// Organizes test case info as a hierarchy.
+		/// </summary>
+		/// <returns>The test info.</returns>
+		/// <param name="testInfo">Test info.</param>
+		/// <param name="infos">Infos.</param>
+		/// <param name="step">Step.</param>
 		void BuildTestInfo (XUnitTestInfo testInfo, IEnumerable<TestCaseInfo> infos, int step)
 		{
 			int count = infos.Count ();
@@ -129,6 +142,13 @@ namespace MonoDevelop.XUnit
 			testInfo.Tests = children.ToArray ();
 		}
 
+		/// <summary>
+		/// Execute test cases.
+		/// </summary>
+		/// <param name="assembly">Assembly.</param>
+		/// <param name="testInfos">Test infos.</param>
+		/// <param name="executionListener">Execution listener.</param>
+		/// <remarks>It uses xunit execution engine to execute the test cases.</remarks>
 		public void Execute (string assembly, XUnitTestInfo[] testInfos, IXUnitExecutionListener executionListener)
 		{
 			var lookup = new HashSet<string> ();

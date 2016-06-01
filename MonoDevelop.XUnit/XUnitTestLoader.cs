@@ -28,8 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Projects;
 using System.Linq;
 using MonoDevelop.UnitTesting.XUnit;
 
@@ -45,6 +43,15 @@ namespace MonoDevelop.XUnit
 		bool isRunning = false;
 		Queue<XUnitAssemblyTestSuite> loadQueue = new Queue<XUnitAssemblyTestSuite> ();
 
+		/// <summary>
+		/// Asyncs the load test case info.
+		/// </summary>
+		/// <returns>The load test info.</returns>
+		/// <param name="testSuite">Test suite.</param>
+		/// <param name="cache">Cache.</param>
+		/// <remarks>
+		/// It loads test case info asynchronously.
+		/// </remarks>
 		public void AsyncLoadTestInfo (XUnitAssemblyTestSuite testSuite, XUnitTestInfoCache cache)
 		{
 			lock (loadQueue) {
@@ -62,6 +69,19 @@ namespace MonoDevelop.XUnit
 			}
 		}
 
+		/// <summary>
+		/// Runs the async load test info.
+		/// </summary>
+		/// <returns>The async load test info.</returns>
+		/// <param name="cache">Cache.</param>
+		/// <remarks>
+		/// It loads the test case info from cache if there is something in the cache.
+		/// 
+		/// Otherwise, the test case info is queried from xunit, by executing a separate process of <seealso cref="XUnitTestRunner"/> 
+		/// with MonoDevelop built-in .NET remoting helper.
+		/// 
+		/// To debug, the .NET remoting part can be commented out, and replaced with direct calls to <seealso cref="XUnitTestRunner"/>.
+		/// </remarks>
 		void RunAsyncLoadTestInfo (XUnitTestInfoCache cache)
 		{
 			while (true) {

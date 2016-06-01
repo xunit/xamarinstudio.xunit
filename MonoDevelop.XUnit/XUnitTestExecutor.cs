@@ -26,12 +26,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Projects;
 using System.Linq;
-using System.IO;
 using System.Runtime.Remoting;
 using MonoDevelop.UnitTesting.XUnit;
 using MonoDevelop.UnitTesting;
@@ -44,11 +40,25 @@ namespace MonoDevelop.XUnit
 	/// </summary>
 	internal class XUnitTestExecutor
 	{
+		/// <summary>
+		/// Runs a single test case.
+		/// </summary>
+		/// <returns>The test case.</returns>
+		/// <param name="rootSuite">Root suite.</param>
+		/// <param name="testCase">Test case.</param>
+		/// <param name="context">Context.</param>
 		public UnitTestResult RunTestCase (XUnitAssemblyTestSuite rootSuite, XUnitTestCase testCase, TestContext context)
 		{
 			return Run (new List<XUnitTestCase> { testCase }, rootSuite, testCase, context, false);
 		}
 
+		/// <summary>
+		/// Runs the entire test suite.
+		/// </summary>
+		/// <returns>The test suite.</returns>
+		/// <param name="rootSuite">Root suite.</param>
+		/// <param name="testSuite">Test suite.</param>
+		/// <param name="context">Context.</param>
 		public UnitTestResult RunTestSuite (XUnitAssemblyTestSuite rootSuite, XUnitTestSuite testSuite, TestContext context)
 		{
 			var testCases = new List<XUnitTestCase> ();
@@ -57,6 +67,12 @@ namespace MonoDevelop.XUnit
 			return Run (testCases, rootSuite, testSuite, context);
 		}
 
+		/// <summary>
+		/// Runs all test suites in the assembly.
+		/// </summary>
+		/// <returns>The assembly test suite.</returns>
+		/// <param name="assemblyTestSuite">Assembly test suite.</param>
+		/// <param name="context">Context.</param>
 		public UnitTestResult RunAssemblyTestSuite (XUnitAssemblyTestSuite assemblyTestSuite, TestContext context)
 		{
 			var testCases = new List<XUnitTestCase> ();
@@ -80,16 +96,31 @@ namespace MonoDevelop.XUnit
 			}
 		}
 
+		/// <summary>
+		/// Run the specified testCases, rootSuite, test, context and reportToMonitor.
+		/// </summary>
+		/// <param name="testCases">Test cases.</param>
+		/// <param name="rootSuite">Root suite.</param>
+		/// <param name="test">Test.</param>
+		/// <param name="context">Context.</param>
+		/// <param name="reportToMonitor">Report to monitor.</param>
+		/// <remarks>
+		/// This is actual the code that executes the test cases.
+		/// 
+		/// It uses the MonoDevelop built-in .NET remoting helper to execute the code of <seealso cref="XUnitTestRunner"/> in a separate process.
+		/// 
+		/// If any debugging is required, simply comment out the remoting part, and call <seealso cref="XUnitTestRunner"/> directly,
+		/// so that the code executes inside MonoDevelop.
+		/// </remarks>
 		UnitTestResult Run (List<XUnitTestCase> testCases, XUnitAssemblyTestSuite rootSuite, IExecutableTest test, TestContext context, bool reportToMonitor = true)
 		{
 			using (var session = test.CreateExecutionSession (reportToMonitor)) {
 				var executionListener = new RemoteExecutionListener (new LocalExecutionListener (context, testCases));
 				RemotingServices.Marshal (executionListener, null, typeof (IXUnitExecutionListener));
 
-                var console = context.ExecutionContext.ConsoleFactory.CreateConsole ();
-
-                XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(XUnitTestRunner),
-                                                                                                              context.ExecutionContext.ExecutionHandler, rootSuite.SupportAssemblies, console);
+				var console = context.ExecutionContext.ConsoleFactory.CreateConsole ();
+				XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof (XUnitTestRunner),
+					context.ExecutionContext.ExecutionHandler, rootSuite.SupportAssemblies, console);
 
 				try {
 					runner.Execute (rootSuite.AssemblyPath, testCases.Select (tc => tc.TestInfo).ToArray (), executionListener);
@@ -159,7 +190,6 @@ namespace MonoDevelop.XUnit
 		public bool IsCancelRequested {
 			get {
 				return context.Monitor.CancellationToken.IsCancellationRequested;
-				//return context.Monitor.IsCancelRequested;
 			}
 		}
 
