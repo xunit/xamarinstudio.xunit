@@ -132,6 +132,14 @@ namespace MonoDevelop.XUnit
 		}
 	}
 
+	/// <summary>
+	/// Remote execution listener.
+	/// </summary>
+	/// <remarks>
+	/// It is used to pass cancellation status between the add-in and the remote process. Thus, <see cref="SerializableAttribute"/> is required.
+	/// 
+	/// It wraps the <see cref="LocalExecutionListener"/>.
+	/// </remarks>
 	[Serializable]
 	public class RemoteExecutionListener: MarshalByRefObject, IXUnitExecutionListener
 	{
@@ -174,6 +182,12 @@ namespace MonoDevelop.XUnit
 		}
 	}
 
+	/// <summary>
+	/// Local execution listener.
+	/// </summary>
+	/// <remarks>
+	/// It is the actual listener in the add-in process, which is wrapped by <see cref="RemoteExecutionListener"/> passed through .NET remoting boundary.
+	/// </remarks>
 	internal class LocalExecutionListener: IXUnitExecutionListener
 	{
 		TestContext context;
