@@ -118,9 +118,8 @@ namespace MonoDevelop.XUnit
 				var executionListener = new RemoteExecutionListener (new LocalExecutionListener (context, testCases));
 				RemotingServices.Marshal (executionListener, null, typeof (IXUnitExecutionListener));
 
-				var console = context.ExecutionContext.ConsoleFactory.CreateConsole ();
 				XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof (XUnitTestRunner),
-					context.ExecutionContext.ExecutionHandler, rootSuite.SupportAssemblies, console);
+					context.ExecutionContext.ExecutionHandler, rootSuite.SupportAssemblies);
 
 				try {
 					runner.Execute (rootSuite.AssemblyPath, testCases.Select (tc => tc.TestInfo).ToArray (), executionListener);
@@ -133,6 +132,7 @@ namespace MonoDevelop.XUnit
 		}
 	}
 
+	[Serializable]
 	public class RemoteExecutionListener: MarshalByRefObject, IXUnitExecutionListener
 	{
 		IXUnitExecutionListener localListener;
