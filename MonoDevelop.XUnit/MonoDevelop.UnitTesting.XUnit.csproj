@@ -76,11 +76,4 @@
     <Folder Include="templates\" />
     <Folder Include="MonoDevelop.UnitTesting.XUnit\" />
   </ItemGroup>
-  <Target Name="BeforeBuild">
-    <PropertyGroup>
-      <NuGet>$(SolutionDir)\external\nuget-binary\nuget.exe</NuGet>
-      <NuGet Condition="$(OS)=='Unix'">mono $(NuGet)</NuGet>
-    </PropertyGroup>
-    <Exec Command="$(NuGet) restore $(SolutionDir)" />
-  </Target>
 </Project>
