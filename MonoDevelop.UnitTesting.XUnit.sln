@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		addin-project.xml = addin-project.xml
 		README.md = README.md
-		MonoDevelop.XUnit\CONTRIBUTING.md = MonoDevelop.XUnit\CONTRIBUTING.md
+		CONTRIBUTING.md = CONTRIBUTING.md
 	EndProjectSection
 EndProject
 Global
