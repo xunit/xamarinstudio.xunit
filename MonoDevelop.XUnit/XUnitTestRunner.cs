@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core.Execution;
 using System.Linq;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace MonoDevelop.XUnit
 {
@@ -149,8 +150,9 @@ namespace MonoDevelop.XUnit
 		/// <param name="testInfos">Test infos.</param>
 		/// <param name="executionListener">Execution listener.</param>
 		/// <remarks>It uses xunit execution engine to execute the test cases.</remarks>
-		public void Execute (string assembly, XUnitTestInfo[] testInfos, IXUnitExecutionListener executionListener)
+		public void Execute (string assembly, string data, IXUnitExecutionListener executionListener)
 		{
+			XUnitTestInfo[] testInfos = JsonConvert.DeserializeObject<XUnitTestInfo[]> (data);
 			var lookup = new HashSet<string> ();
 			foreach (var testInfo in testInfos)
 				lookup.Add (testInfo.Id);

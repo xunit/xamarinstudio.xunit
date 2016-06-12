@@ -31,6 +31,7 @@ using System.Linq;
 using System.Runtime.Remoting;
 using MonoDevelop.UnitTesting.XUnit;
 using MonoDevelop.UnitTesting;
+using Newtonsoft.Json;
 
 namespace MonoDevelop.XUnit
 {
@@ -121,8 +122,11 @@ namespace MonoDevelop.XUnit
 				XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof (XUnitTestRunner),
 					context.ExecutionContext.ExecutionHandler, rootSuite.SupportAssemblies);
 
+				var data = JsonConvert.SerializeObject(testCases.Select(tc => tc.TestInfo).ToArray());
 				try {
-					runner.Execute (rootSuite.AssemblyPath, testCases.Select (tc => tc.TestInfo).ToArray (), executionListener);
+					runner.Execute (rootSuite.AssemblyPath, data, executionListener);
+				} catch (Exception ex) {
+					Console.WriteLine (ex);
 				} finally {
 					runner.Dispose ();
 				}
