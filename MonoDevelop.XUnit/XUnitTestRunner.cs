@@ -57,7 +57,7 @@ namespace MonoDevelop.XUnit
 			var infos = new List<TestCaseInfo> ();
 
 			if (assembly != null && File.Exists (assembly)) {
-				using (var controller = new XunitFrontController (assembly, null, false))
+				using (var controller = new XunitFrontController (AppDomainSupport.IfAvailable, assembly, null, false))
 				using (var discoveryVisitor = new TestDiscoveryVisitor ()) {
 					controller.Find (false, discoveryVisitor, TestFrameworkOptions.ForDiscovery ());
 					discoveryVisitor.Finished.WaitOne ();
@@ -137,7 +137,7 @@ namespace MonoDevelop.XUnit
 
 			// we don't want to run every test in the assembly
 			// only the tests passed in "testInfos" argument
-			using (var controller = new XunitFrontController (assembly, null, false))
+			using (var controller = new XunitFrontController (AppDomainSupport.IfAvailable, assembly, null, false))
 			using (var discoveryVisitor = new TestDiscoveryVisitor (tc => lookup.Contains (tc.UniqueID)))
 			using (var executionVisitor = new TestExecutionVisitor (executionListener)) {
 				controller.Find(false, discoveryVisitor, TestFrameworkOptions.ForDiscovery ());
