@@ -99,6 +99,7 @@ namespace MonoDevelop.XUnit
 		}
 	}
 
+	[Serializable]
 	public class RemoteExecutionListener: MarshalByRefObject, IXUnitExecutionListener
 	{
 		IXUnitExecutionListener localListener;
