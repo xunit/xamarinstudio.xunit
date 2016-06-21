@@ -52,14 +52,33 @@ namespace MonoDevelop.XUnit
 				Assembly.LoadFrom (assembly);
 		}
 
+		TestAssemblyConfiguration LoadTestAssemblyConfiguration(string assembly)
+		{
+			Type t = Type.GetType("Mono.Runtime");
+			var conf = ConfigReader.Load(assembly);
+			if (t != null) {
+				//TODO support below
+				conf.PreEnumerateTheories = true;
+				conf.ParallelizeTestCollections = false;
+				conf.AppDomain = AppDomainSupport.Denied;
+			}
+			return conf;
+		}
+		/// <summary>
+		/// Builds the test info.
+		/// </summary>
+		/// <returns>The test info.</returns>
+		/// <param name="assembly">Assembly.</param>
+		/// <remarks>It uses xunit built-in function to load test case info from the test assembly.</remarks>
 		XUnitTestInfo BuildTestInfo (string assembly)
 		{
 			var infos = new List<TestCaseInfo> ();
-
+			var conf = LoadTestAssemblyConfiguration(assembly);
+			var discoveryOptions = TestFrameworkOptions.ForDiscovery(conf);
 			if (assembly != null && File.Exists (assembly)) {
-				using (var controller = new XunitFrontController (AppDomainSupport.IfAvailable, assembly, null, false))
+				using (var controller = new XunitFrontController (conf.AppDomainOrDefault, assembly, null, conf.ShadowCopyOrDefault, null, new NullSourceInformationProvider()))
 				using (var discoveryVisitor = new TestDiscoveryVisitor ()) {
-					controller.Find (false, discoveryVisitor, TestFrameworkOptions.ForDiscovery ());
+					controller.Find (false, discoveryVisitor, discoveryOptions);
 					discoveryVisitor.Finished.WaitOne ();
 
 					foreach (var testCase in discoveryVisitor.TestCases) {
@@ -135,19 +154,20 @@ namespace MonoDevelop.XUnit
 			foreach (var testInfo in testInfos)
 				lookup.Add (testInfo.Id);
 
+			TestAssemblyConfiguration conf = LoadTestAssemblyConfiguration(assembly);
+			var discoveryOptions = TestFrameworkOptions.ForDiscovery(conf);
+			var executionOptions = TestFrameworkOptions.ForExecution(conf);
+			executionOptions.SetSynchronousMessageReporting(true);
+
 			// we don't want to run every test in the assembly
 			// only the tests passed in "testInfos" argument
-			using (var controller = new XunitFrontController (AppDomainSupport.IfAvailable, assembly, null, false))
+			using (var controller = new XunitFrontController (conf.AppDomainOrDefault, assembly, null, conf.ShadowCopyOrDefault, null, new NullSourceInformationProvider()))
 			using (var discoveryVisitor = new TestDiscoveryVisitor (tc => lookup.Contains (tc.UniqueID)))
 			using (var executionVisitor = new TestExecutionVisitor (executionListener)) {
-				controller.Find(false, discoveryVisitor, TestFrameworkOptions.ForDiscovery ());
+				controller.Find(false, discoveryVisitor, discoveryOptions);
 				discoveryVisitor.Finished.WaitOne ();
 
-				var options = TestFrameworkOptions.ForExecution ();
-				options.SetDisableParallelization (true);
-				options.SetSynchronousMessageReporting (true);
-
-				controller.RunTests (discoveryVisitor.TestCases, executionVisitor, options);
+				controller.RunTests (discoveryVisitor.TestCases, executionVisitor, executionOptions);
 			}
 		}
 
