@@ -32,6 +32,8 @@ using System.Runtime.Remoting;
 using MonoDevelop.UnitTesting.XUnit;
 using MonoDevelop.UnitTesting;
 using Newtonsoft.Json;
+using MonoDevelop.UnitTesting.XUnit.External;
+using System.IO;
 
 namespace MonoDevelop.XUnit
 {
@@ -113,132 +115,25 @@ namespace MonoDevelop.XUnit
 		/// If any debugging is required, simply comment out the remoting part, and call <seealso cref="XUnitTestRunner"/> directly,
 		/// so that the code executes inside MonoDevelop.
 		/// </remarks>
-		UnitTestResult Run (List<XUnitTestCase> testCases, XUnitAssemblyTestSuite rootSuite, IExecutableTest test, TestContext context, bool reportToMonitor = true)
+		UnitTestResult Run(List<XUnitTestCase> testCases, XUnitAssemblyTestSuite rootSuite, IExecutableTest test, TestContext context, bool reportToMonitor = true)
 		{
-			using (var session = test.CreateExecutionSession (reportToMonitor)) {
-				var executionListener = new RemoteExecutionListener (new LocalExecutionListener (context, testCases));
-				RemotingServices.Marshal (executionListener, null, typeof (IXUnitExecutionListener));
+			using (var session = test.CreateExecutionSession(reportToMonitor)) {
+				using (var runner = new ExternalTestRunner()) {
+					runner.Connect(UnitTesting.XUnit.External.XUnitVersion.XUnit2, context.ExecutionContext.ExecutionHandler).Wait();
+					var localTestMonitor = new LocalTestMonitor(context, rootSuite, rootSuite.Name, false);
 
-				XUnitTestRunner runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof (XUnitTestRunner),
-					context.ExecutionContext.ExecutionHandler, rootSuite.SupportAssemblies);
+					string[] nameFilter = new string[testCases.Count];
+					for (var i = 0; i < testCases.Count; ++i) {
+						nameFilter[i] = testCases[i].TestInfo.Id;
+					}
 
-				var data = JsonConvert.SerializeObject(testCases.Select(tc => tc.TestInfo).ToArray());
-				try {
-					runner.Execute (rootSuite.AssemblyPath, data, executionListener);
-				} catch (Exception ex) {
-					Console.WriteLine (ex);
-				} finally {
-					runner.Dispose ();
+					var path = rootSuite.AssemblyPath;
+					var supportAssemblies = new List<string>();
+					var crashLogFile = Path.GetTempFileName();
+					runner.Run(localTestMonitor, nameFilter, path, "", supportAssemblies, null, null, crashLogFile).Wait();
 				}
-
 				return session.Result;
 			}
-		}
-	}
-
-	/// <summary>
-	/// Remote execution listener.
-	/// </summary>
-	/// <remarks>
-	/// It is used to pass cancellation status between the add-in and the remote process. Thus, <see cref="SerializableAttribute"/> is required.
-	/// 
-	/// It wraps the <see cref="LocalExecutionListener"/>.
-	/// </remarks>
-	[Serializable]
-	public class RemoteExecutionListener: MarshalByRefObject, IXUnitExecutionListener
-	{
-		IXUnitExecutionListener localListener;
-
-		public bool IsCancelRequested {
-			get {
-				return localListener.IsCancelRequested;
-			}
-		}
-
-		public RemoteExecutionListener (IXUnitExecutionListener localListener)
-		{
-			this.localListener = localListener;
-		}
-
-		public void OnTestCaseStarting (string id)
-		{
-			localListener.OnTestCaseStarting (id);
-		}
-
-		public void OnTestCaseFinished (string id)
-		{
-			localListener.OnTestCaseFinished (id);
-		}
-
-		public void OnTestFailed (string id, decimal executionTime, string output, string[] exceptionTypes, string[] messages, string[] stackTraces)
-		{
-			localListener.OnTestFailed (id, executionTime, output, exceptionTypes, messages, stackTraces);
-		}
-
-		public void OnTestPassed (string id, decimal executionTime, string output)
-		{
-			localListener.OnTestPassed (id, executionTime, output);
-		}
-
-		public void OnTestSkipped (string id, string reason)
-		{
-			localListener.OnTestSkipped (id, reason);
-		}
-	}
-
-	/// <summary>
-	/// Local execution listener.
-	/// </summary>
-	/// <remarks>
-	/// It is the actual listener in the add-in process, which is wrapped by <see cref="RemoteExecutionListener"/> passed through .NET remoting boundary.
-	/// </remarks>
-	internal class LocalExecutionListener: IXUnitExecutionListener
-	{
-		TestContext context;
-		Dictionary<string, XUnitTestCase> lookup;
-
-		public LocalExecutionListener (TestContext context, List<XUnitTestCase> testCases)
-		{
-			this.context = context;
-
-			// create a lookup table so later we can identify a test case by it's id
-			lookup = testCases.ToDictionary (tc => tc.TestInfo.Id);
-		}
-
-		public bool IsCancelRequested {
-			get {
-				return context.Monitor.CancellationToken.IsCancellationRequested;
-			}
-		}
-
-		public void OnTestCaseStarting (string id)
-		{
-			var testCase = lookup [id];
-			testCase.OnStarting (context, id);
-		}
-
-		public void OnTestCaseFinished (string id)
-		{
-			var testCase = lookup [id];
-			testCase.OnFinished (context, id);
-		}
-
-		public void OnTestFailed (string id, decimal executionTime, string output, string[] exceptionTypes, string[] messages, string[] stackTraces)
-		{
-			var testCase = lookup [id];
-			testCase.OnFailed (context, id, executionTime, output, exceptionTypes, messages, stackTraces);
-		}
-
-		public void OnTestPassed (string id, decimal executionTime, string output)
-		{
-			var testCase = lookup [id];
-			testCase.OnPassed (context, id, executionTime, output);
-		}
-
-		public void OnTestSkipped (string id, string reason)
-		{
-			var testCase = lookup [id];
-			testCase.OnSkipped (context, id, reason);
 		}
 	}
 }

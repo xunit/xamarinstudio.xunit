@@ -52,6 +52,7 @@ namespace MonoDevelop.UnitTesting.XUnit
 			TestInfo = testInfo;
 			this.executor = executor;
 			FixtureTypeName = testInfo.Type;
+			this.TestId = testInfo.Id;
 		}
 
 		protected override bool OnCanRun(IExecutionHandler executionContext)

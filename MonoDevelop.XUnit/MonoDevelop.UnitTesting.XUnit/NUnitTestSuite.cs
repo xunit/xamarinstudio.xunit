@@ -50,6 +50,7 @@ namespace MonoDevelop.UnitTesting.XUnit
 			this.rootSuite = rootSuite;
 			TestInfo = testInfo;
 			this.executor = executor;
+			this.TestId = testInfo.Id;
 		}
 
 		public XUnitExecutionSession CreateExecutionSession(bool reportToMonitor)

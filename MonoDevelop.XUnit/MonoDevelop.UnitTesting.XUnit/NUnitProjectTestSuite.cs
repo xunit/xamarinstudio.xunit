@@ -35,6 +35,7 @@ using System.Linq;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
+using MonoDevelop.UnitTesting.XUnit.External;
 using MonoDevelop.XUnit;
 using ProjectReference = MonoDevelop.Projects.ProjectReference;
 

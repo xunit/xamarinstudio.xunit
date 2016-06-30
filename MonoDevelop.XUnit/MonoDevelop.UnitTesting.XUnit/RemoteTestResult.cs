@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.XUnit;
 
 namespace MonoDevelop.UnitTesting.XUnit
 {
@@ -75,43 +76,59 @@ namespace MonoDevelop.UnitTesting.XUnit
     public class GetTestInfoResponse : BinaryMessage
     {
         [MessageDataProperty]
-        public XunitTestInfo Result { get; set; }
+        public XUnitTestInfo Result { get; set; }
     }
 
     [MessageDataType]
     public class TestStartedMessage : BinaryMessage
     {
         [MessageDataProperty]
-        public string TestCase { get; set; }
+        public string TestCaseId { get; set; }
     }
 
     [MessageDataType]
     public class TestFinishedMessage : BinaryMessage
     {
         [MessageDataProperty]
-        public string TestCase { get; set; }
-
-        [MessageDataProperty]
-        public RemoteTestResult Result;
+        public string TestCaseId { get; set; }
     }
 
-    [MessageDataType]
-    public class SuiteStartedMessage : BinaryMessage
-    {
-        [MessageDataProperty]
-        public string Suite { get; set; }
-    }
+	[MessageDataType]
+	public class TestPassedMessage : BinaryMessage
+	{
+		[MessageDataProperty]
+		public string TestCaseId { get; set; }
+		[MessageDataProperty]
+		public TimeSpan ExecutionTime { get; set; }
+		[MessageDataProperty]
+		public string Output { get; set; }
+	}
 
-    [MessageDataType]
-    public class SuiteFinishedMessage : BinaryMessage
-    {
-        [MessageDataProperty]
-        public string Suite { get; set; }
+	[MessageDataType]
+	public class TestFailedMessage : BinaryMessage
+	{
+		[MessageDataProperty]
+		public string TestCaseId { get; set; }
+		[MessageDataProperty]
+		public TimeSpan ExecutionTime { get; set; }
+		[MessageDataProperty]
+		public string Output { get; set; }
+		[MessageDataProperty]
+		public string[] ExceptionTypes { get; set; }
+		[MessageDataProperty]
+		public string[] Messages { get; set; }
+		[MessageDataProperty]
+		public string[] StackTraces { get; set;}
+	}
 
-        [MessageDataProperty]
-        public RemoteTestResult Result;
-    }
-
+	[MessageDataType]
+	public class TestSkippedMessage : BinaryMessage
+	{
+		[MessageDataProperty]
+		public string TestCaseId { get; set; }
+		[MessageDataProperty]
+		public string Reason { get; set; }
+	}
 
     [MessageDataType]
     public class RemoteTestResult
@@ -157,32 +174,6 @@ namespace MonoDevelop.UnitTesting.XUnit
 
         [MessageDataProperty]
         public string ConsoleError { get; set; }
-    }
-
-    [MessageDataType]
-    [Serializable]
-    public class XunitTestInfo
-    {
-        [MessageDataProperty]
-        public string Name { get; set; }
-
-        [MessageDataProperty]
-        public string PathName { get; set; }
-
-        [MessageDataProperty]
-        public string TestId { get; set; }
-
-        [MessageDataProperty]
-        public string FixtureTypeName { get; set; }
-
-        [MessageDataProperty]
-        public string FixtureTypeNamespace { get; set; }
-
-        [MessageDataProperty]
-        public bool IsExplicit { get; set; }
-
-        [MessageDataProperty]
-        public XunitTestInfo [] Tests { get; set; }
     }
 
     [Flags]
