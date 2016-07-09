@@ -11,6 +11,10 @@ Installation
 1. Click Gallery tag, and make sure "All repositories" is selected as Repository.
 1. Choose "xUnit.NET 2 testing framework support" under Testing, and click Install button.
 
+Usage
+-----
+Upon installation, the Unit Tests panel in Xamarin Studio/MonoDevelop starts to recognize xUnit.net test cases. Then you can run/debug test cases.
+
 Extra Note
 ----------
 * If you install 5.x version of this add-in in MonoDevelop/Xamarin Studio 5.x and then upgrade the IDE to 6.x, please use Add-in Manager to upgrade this add-in to 6.x version.
