@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using MonoDevelop.UnitTesting;
 
 namespace MonoDevelop.XUnit
@@ -70,36 +71,45 @@ namespace MonoDevelop.XUnit
 
 		public void Begin (TestContext context)
 		{
-			if (!isActive) {
-				this.context = context;
+			lock(this) {
+				if (!isActive) {
+					this.context = context;
 
-				// notify the parent session before starting the test itself
-				if (parentSession != null)
-					parentSession.OnChildSessionStarting (this, context);
+					// notify the parent session before starting the test itself
+					if (parentSession != null)
+						parentSession.OnChildSessionStarting(this, context);
 
-				if (reportToMonitor) {
-					context.Monitor.BeginTest (unitTest);
-					unitTest.Status = TestStatus.Running;
+					if (reportToMonitor) {
+						context.Monitor.BeginTest(unitTest);
+						unitTest.Status = TestStatus.Running;
+					}
+
+					isActive = true;
+					Monitor.Pulse(this);
 				}
-
-				isActive = true;
 			}
 		}
 
 		public void End ()
 		{
-			if (isActive) {
-				if (reportToMonitor) {
-					context.Monitor.EndTest (unitTest, result);
-					unitTest.Status = TestStatus.Ready;
-					unitTest.RegisterResult (context, result);
+			lock(this) {
+				if (isActive == false) {
+					//End msg arrive earlier than Start msg, wait Start msg to be processed
+					Monitor.Wait(this);
 				}
+				if (isActive) {
+					if (reportToMonitor) {
+						context.Monitor.EndTest(unitTest, result);
+						unitTest.Status = TestStatus.Ready;
+						unitTest.RegisterResult(context, result);
+					}
 
-				// notify the parent session after finishing the test itself
-				if (parentSession != null)
-					parentSession.OnChildSessionFinished (this);
+					// notify the parent session after finishing the test itself
+					if (parentSession != null)
+						parentSession.OnChildSessionFinished(this);
 
-				isActive = false;
+					isActive = false;
+				}
 			}
 		}
 
