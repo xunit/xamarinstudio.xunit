@@ -30,6 +30,7 @@ using System.Threading;
 using MonoDevelop.Core;
 using System.Linq;
 using MonoDevelop.UnitTesting.XUnit;
+using MonoDevelop.UnitTesting.XUnit.External;
 
 namespace MonoDevelop.XUnit
 {
@@ -114,11 +115,11 @@ namespace MonoDevelop.XUnit
 					LoggingService.LogError (ex.ToString ());
 				}
 
-				using (var runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof (XUnitTestRunner), false)) {
-					testInfo = runner.GetTestInfo (testSuite.AssemblyPath, testSuite.SupportAssemblies.ToArray ());
+				using (var runner = new ExternalTestRunner()) {
+					runner.Connect(UnitTesting.XUnit.External.XUnitVersion.XUnit2).Wait();
+					testInfo = runner.GetTestInfo(testSuite.AssemblyPath, testSuite.SupportAssemblies.ToList()).Result;
+					testSuite.OnTestSuiteLoaded(testInfo);
 				}
-
-				testSuite.OnTestSuiteLoaded (testInfo);
 			}
 		}
 	}

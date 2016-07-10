@@ -41,7 +41,8 @@
     <Compile Include="XUnitTestInfo.cs" />
     <Compile Include="XUnitTestInfoCache.cs" />
     <Compile Include="XUnitTestLoader.cs" />
-    <Compile Include="XUnitTestRunner.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.XUnit\RemoteTestResult.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.XUnit\ExternalTestRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />

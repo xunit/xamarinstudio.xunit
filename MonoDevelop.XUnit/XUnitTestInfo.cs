@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.XUnit
 {
@@ -34,14 +35,21 @@ namespace MonoDevelop.XUnit
 	/// <remarks>
 	/// It is serializable because it goes through process boundary.
 	/// </remarks>
+	[MessageDataType]
 	[Serializable]
 	public class XUnitTestInfo
 	{
-		public string Id;
-		public string Name;
-		public string Type;
-		public string Method;
-		public XUnitTestInfo[] Tests;
-		public object[] Args;
+		[MessageDataProperty]
+		public string Id { get; set; }
+		[MessageDataProperty]
+		public string Name{ get; set; }
+		[MessageDataProperty]
+		public string Type{ get; set; }
+		[MessageDataProperty]
+		public string Method{ get; set; }
+		[MessageDataProperty]
+		public XUnitTestInfo[] Tests{ get; set; }
+		[MessageDataProperty]
+		public object[] Args{ get; set; }
 	}
 }

@@ -39,103 +39,110 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
 using System.Threading.Tasks;
+using MonoDevelop.XUnit;
 
 namespace MonoDevelop.UnitTesting.XUnit.External
 {
-    class ExternalTestRunner : IDisposable
-    {
-        RemoteProcessConnection connection;
-        IRemoteEventListener listener;
+	class ExternalTestRunner : IDisposable
+	{
+		RemoteProcessConnection connection;
+		IRemoteEventListener listener;
 
-        public ExternalTestRunner ()
-        {
-        }
+		public ExternalTestRunner()
+		{
+		}
 
-        public Task Connect (XUnitVersion version, IExecutionHandler executionHandler = null, OperationConsole console = null)
-        {
-            var exePath = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), version.ToString (), "XUnitRunner.exe");
-            connection = new RemoteProcessConnection (exePath, executionHandler, console, Runtime.MainSynchronizationContext);
-            connection.AddListener (this);
-            return connection.Connect ();
-        }
+		public Task Connect(XUnitVersion version, IExecutionHandler executionHandler = null, OperationConsole console = null)
+		{
+			var exePath = Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), version.ToString(), "XUnitRunner.exe");
+			connection = new RemoteProcessConnection(exePath, executionHandler, console, Runtime.MainSynchronizationContext);
+			connection.AddListener(this);
+			return connection.Connect();
+		}
 
-        public async Task<UnitTestResult> Run (IRemoteEventListener listener, string [] nameFilter, string path, string suiteName, List<string> supportAssemblies, string testRunnerType, string testRunnerAssembly, string crashLogFile)
-        {
-            this.listener = listener;
+		public async Task<UnitTestResult> Run(IRemoteEventListener listener, string[] nameFilter, string path, string suiteName, List<string> supportAssemblies, string testRunnerType, string testRunnerAssembly, string crashLogFile)
+		{
+			this.listener = listener;
 
-            var msg = new RunRequest {
-                NameFilter = nameFilter,
-                Path = path,
-                SuiteName = suiteName,
-                SupportAssemblies = supportAssemblies.ToArray (),
-                TestRunnerType = testRunnerType,
-                TestRunnerAssembly = testRunnerAssembly,
-                CrashLogFile = crashLogFile
-            };
+			var msg = new RunRequest {
+				NameFilter = nameFilter,
+				Path = path,
+				SuiteName = suiteName,
+				SupportAssemblies = supportAssemblies.ToArray(),
+				TestRunnerType = testRunnerType,
+				TestRunnerAssembly = testRunnerAssembly,
+				CrashLogFile = crashLogFile
+			};
 
-            var r = (await connection.SendMessage (msg)).Result;
+			var r = (await connection.SendMessage(msg)).Result;
 
-            await connection.ProcessPendingMessages ();
+			await connection.ProcessPendingMessages();
 
-            return ToUnitTestResult (r);
-        }
+			return ToUnitTestResult(r);
+		}
 
-        UnitTestResult ToUnitTestResult (RemoteTestResult r)
-        {
-            if (r == null)
-                return null;
+		UnitTestResult ToUnitTestResult(RemoteTestResult r)
+		{
+			if (r == null)
+				return null;
 
-            return new UnitTestResult {
-                TestDate = r.TestDate,
-                Status = (ResultStatus)(int)r.Status,
-                Passed = r.Passed,
-                Errors = r.Errors,
-                Failures = r.Failures,
-                Inconclusive = r.Inconclusive,
-                NotRunnable = r.NotRunnable,
-                Skipped = r.Skipped,
-                Ignored = r.Ignored,
-                Time = r.Time,
-                Message = r.Message,
-                StackTrace = r.StackTrace,
-                ConsoleOutput = r.ConsoleOutput,
-                ConsoleError = r.ConsoleError
-            };
-        }
+			return new UnitTestResult {
+				TestDate = r.TestDate,
+				Status = (ResultStatus)(int)r.Status,
+				Passed = r.Passed,
+				Errors = r.Errors,
+				Failures = r.Failures,
+				Inconclusive = r.Inconclusive,
+				NotRunnable = r.NotRunnable,
+				Skipped = r.Skipped,
+				Ignored = r.Ignored,
+				Time = r.Time,
+				Message = r.Message,
+				StackTrace = r.StackTrace,
+				ConsoleOutput = r.ConsoleOutput,
+				ConsoleError = r.ConsoleError
+			};
+		}
 
-        public async Task<XunitTestInfo> GetTestInfo (string path, List<string> supportAssemblies)
-        {
-            var msg = new GetTestInfoRequest {
-                Path = path,
-                SupportAssemblies = supportAssemblies.ToArray ()
-            };
+		public async Task<XUnitTestInfo> GetTestInfo(string path, List<string> supportAssemblies)
+		{
+			var msg = new GetTestInfoRequest {
+				Path = path,
+				SupportAssemblies = supportAssemblies.ToArray()
+			};
 
-            return (await connection.SendMessage (msg)).Result;
-        }
+			return (await connection.SendMessage(msg)).Result;
+		}
 
-        [MessageHandler]
-        public void OnTestStarted (TestStartedMessage msg)
-        {
-            listener.TestStarted (msg.TestCase);
-        }
+		[MessageHandler]
+		public void OnTestStarted(TestStartedMessage msg)
+		{
+			listener.OnTestCaseStarting(msg.TestCaseId);
+		}
 
-        [MessageHandler]
-        public void OnTestFinished (TestFinishedMessage msg)
-        {
-            listener.TestFinished (msg.TestCase, ToUnitTestResult (msg.Result));
-        }
+		[MessageHandler]
+		public void OnTestFinished(TestFinishedMessage msg)
+		{
+			listener.OnTestCaseFinished(msg.TestCaseId);
+		}
 
-        [MessageHandler]
-        public void OnSuiteStarted (SuiteStartedMessage msg)
-        {
-            listener.SuiteStarted (msg.Suite);
-        }
+		[MessageHandler]
+		public void OnTestPassed(TestPassedMessage msg)
+		{
+			listener.OnTestPassed(msg.TestCaseId, (decimal)(msg.ExecutionTime.TotalMilliseconds/1000.0), msg.Output);
+		}
 
-        [MessageHandler]
-        public void OnSuiteFinished (SuiteFinishedMessage msg)
-        {
-            listener.SuiteFinished (msg.Suite, ToUnitTestResult (msg.Result));
-        }
+		[MessageHandler]
+		public void OnTestFailed(TestFailedMessage msg)
+		{
+			listener.OnTestFailed(msg.TestCaseId, (decimal)(msg.ExecutionTime.TotalMilliseconds / 1000.0), msg.Output, msg.ExceptionTypes, msg.Messages, msg.StackTraces);
+		}
+
+		[MessageHandler]
+		public void OnTestSkipped(TestSkippedMessage msg)
+		{
+			listener.OnTestSkipped(msg.TestCaseId, msg.Reason);
+		}
 
         public void Dispose ()
         {
@@ -147,128 +154,19 @@ namespace MonoDevelop.UnitTesting.XUnit.External
     {
         TestContext context;
         UnitTest rootTest;
-        //      string rootFullName;
-        UnitTest runningTest;
-        bool singleTestRun;
-        UnitTestResult singleTestResult;
-        public bool Canceled;
 
         public LocalTestMonitor (TestContext context, UnitTest rootTest, string rootFullName, bool singleTestRun)
         {
-            //          this.rootFullName = rootFullName;
             this.rootTest = rootTest;
             this.context = context;
-            this.singleTestRun = singleTestRun;
         }
 
-        public UnitTest RunningTest {
-            get { return runningTest; }
-        }
-
-        internal UnitTestResult SingleTestResult {
-            get {
-                if (singleTestResult == null)
-                    singleTestResult = new UnitTestResult ();
-                return singleTestResult;
-            }
-            set {
-                singleTestResult = value;
-            }
-        }
-
-        void IRemoteEventListener.TestStarted (string testCase)
-        {
-            if (singleTestRun || Canceled)
-                return;
-
-            UnitTest t = GetLocalTest (testCase);
-            if (t == null)
-                return;
-
-            runningTest = t;
-            context.Monitor.BeginTest (t);
-            t.Status = TestStatus.Running;
-        }
-
-        void ProcessResult (UnitTestResult res)
-        {
-            if (string.IsNullOrEmpty (res.Message)) {
-                if (res.IsFailure)
-                    res.Message = GettextCatalog.GetString ("Test failed");
-                else if (res.IsNotRun)
-                    res.Message = GettextCatalog.GetString ("Test ignored");
-                else {
-                    res.Message = GettextCatalog.GetString ("Test successful") + "\n\n";
-                    res.Message += GettextCatalog.GetString ("Execution time: {0:0.00}ms", res.Time.TotalMilliseconds);
-                }
-            }
-        }
-
-        void IRemoteEventListener.TestFinished (string test, UnitTestResult result)
-        {
-            if (Canceled)
-                return;
-
-            ProcessResult (result);
-
-            if (singleTestRun) {
-                SingleTestResult = result;
-                return;
-            }
-
-            UnitTest t = GetLocalTest (test);
-            if (t == null)
-                return;
-
-            t.RegisterResult (context, result);
-            context.Monitor.EndTest (t, result);
-            t.Status = TestStatus.Ready;
-            runningTest = null;
-        }
-
-        void IRemoteEventListener.SuiteStarted (string suite)
-        {
-            if (singleTestRun || Canceled)
-                return;
-
-            UnitTest t = GetLocalTest (suite);
-            if (t == null)
-                return;
-
-            t.Status = TestStatus.Running;
-            context.Monitor.BeginTest (t);
-        }
-
-        void IRemoteEventListener.SuiteFinished (string suite, UnitTestResult result)
-        {
-            if (singleTestRun || Canceled)
-                return;
-
-            ProcessResult (result);
-
-            UnitTest t = GetLocalTest (suite);
-            if (t == null)
-                return;
-
-            t.RegisterResult (context, result);
-            t.Status = TestStatus.Ready;
-            context.Monitor.EndTest (t, result);
-        }
-
-        UnitTest GetLocalTest (string sname)
+		XUnitTestCase GetLocalTest (string sname)
         {
             if (sname == null)
                 return null;
-            if (sname == "<root>")
-                return rootTest;
-            /*
-            if (sname.StartsWith (rootFullName)) {
-                sname = sname.Substring (rootFullName.Length);
-            }
-            if (sname.StartsWith ("."))
-                sname = sname.Substring (1);*/
             UnitTest tt = FindTest (rootTest, sname);
-            return tt;
+            return tt as XUnitTestCase;
         }
 
         UnitTest FindTest (UnitTest t, string testPath)
@@ -295,18 +193,57 @@ namespace MonoDevelop.UnitTesting.XUnit.External
             return null;
         }
 
-        public override object InitializeLifetimeService ()
-        {
-            return null;
-        }
-    }
+		public void OnTestCaseStarting(string id)
+		{
+			var t = GetLocalTest(id);
+			if (t == null)
+				return;
+			t.OnStarting(context, id);
+		}
+
+		public void OnTestCaseFinished(string id)
+		{
+			var t = GetLocalTest(id);
+			if (t == null)
+				return;
+			t.OnFinished(context, id);
+		}
+
+		public void OnTestFailed(string id, decimal executionTime, string output, string[] exceptionTypes, string[] messages, string[] stackTraces)
+		{
+			var t = GetLocalTest(id);
+			if (t == null)
+				return;
+			t.OnFailed(context, id,executionTime,output,exceptionTypes,messages,stackTraces);
+		}
+
+		public void OnTestPassed(string id, decimal executionTime, string output)
+		{
+			var t = GetLocalTest(id);
+			if (t == null)
+				return;
+			t.OnPassed(context,id, executionTime, output);
+		}
+
+		public void OnTestSkipped(string id, string reason)
+		{
+			var t = GetLocalTest(id);
+			if (t == null)
+				return;
+			t.OnSkipped(context, id, reason);
+		}
+	}
 
     public interface IRemoteEventListener
     {
-        void TestStarted (string testCase);
-        void TestFinished (string test, UnitTestResult result);
-        void SuiteStarted (string suite);
-        void SuiteFinished (string suite, UnitTestResult result);
+		void OnTestCaseStarting(string id);
+		void OnTestCaseFinished(string id);
+		void OnTestFailed(string id,
+			decimal executionTime, string output, string[] exceptionTypes, string[] messages, string[] stackTraces);
+		void OnTestPassed(string id,
+			decimal executionTime, string output);
+		void OnTestSkipped(string id,
+			string reason);
     }
 
     public enum XUnitVersion
