@@ -1,3 +1,5 @@
+[![Stories in Ready](https://badge.waffle.io/xunit/xamarinstudio.xunit.svg?label=ready&title=Ready)](http://waffle.io/xunit/xamarinstudio.xunit) 
+
 xUnit.NET testing framework support
 ===================================
 Integrates xUnit.NET into the MonoDevelop / Xamarin Studio IDE.
