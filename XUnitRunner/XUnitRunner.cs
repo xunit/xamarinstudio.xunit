@@ -194,7 +194,9 @@ namespace XUnitRunner
 					string[] typeParts = Type.Split('.');
 					nameParts = new string[typeParts.Length + 2];
 					typeParts.CopyTo(nameParts, 0);
-					nameParts[typeParts.Length] = DisplayName.Split('.').Last();
+					var leftBracket = DisplayName.IndexOf('(');
+					var lastDot = DisplayName.LastIndexOf('.', leftBracket);
+					nameParts[typeParts.Length] = DisplayName.Substring(lastDot + 1);
 					nameParts[typeParts.Length + 1] = Method;
 				}
 				// this is [fact]
