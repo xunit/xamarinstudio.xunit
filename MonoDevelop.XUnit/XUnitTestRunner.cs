@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core.Execution;
 using System.Linq;
 using System.IO;
+using MonoDevelop.UnitTesting.XUnit;
 using System.Threading;
 
 namespace MonoDevelop.XUnit
@@ -57,7 +58,7 @@ namespace MonoDevelop.XUnit
 			Type t = Type.GetType("Mono.Runtime");
 			var conf = ConfigReader.Load(assembly);
 			if (t != null) {
-				//TODO support below
+				// TODO: support below
 				conf.PreEnumerateTheories = true;
 				conf.ParallelizeTestCollections = false;
 				conf.AppDomain = AppDomainSupport.Denied;
@@ -86,7 +87,6 @@ namespace MonoDevelop.XUnit
 							Id = testCase.UniqueID,
 							Type = testCase.TestMethod.TestClass.Class.Name,
 							Method = testCase.TestMethod.Method.Name,
-							DisplayName = testCase.DisplayName,
 							Args = testCase.TestMethodArguments
 						});
 					}
@@ -94,9 +94,9 @@ namespace MonoDevelop.XUnit
 
 				// sort by type, method
 				infos.Sort ((info1, info2) => {
-					int i = info1.Type.CompareTo (info2.Type);
+					int i = string.Compare(info1.Type, info2.Type, StringComparison.Ordinal);
 					if (i == 0)
-						i = info1.Method.CompareTo (info2.Method);
+						i = string.Compare(info1.Method, info2.Method, StringComparison.Ordinal);
 					return i;
 				});
 			}
@@ -122,7 +122,7 @@ namespace MonoDevelop.XUnit
 					testInfo.Id = firstItem.Id;
 					testInfo.Type = firstItem.Type;
 					testInfo.Method = firstItem.Method;
-					testInfo.Name = firstItem.Name;
+					testInfo.Name = firstItem.DisplayName;
 					testInfo.Args = firstItem.Args;
 					return;
 				}
@@ -148,10 +148,17 @@ namespace MonoDevelop.XUnit
 			testInfo.Tests = children.ToArray ();
 		}
 
-		public void Execute (string assembly, XUnitTestInfo[] testInfos, IXUnitExecutionListener executionListener)
+		/// <summary>
+		/// Execute test cases.
+		/// </summary>
+		/// <param name="assembly">Assembly.</param>
+		/// <param name="data">Test infos.</param>
+		/// <param name="executionListener">Execution listener.</param>
+		/// <remarks>It uses xunit execution engine to execute the test cases.</remarks>
+		public void Execute (string assembly, XUnitTestInfo[] data, IXUnitExecutionListener executionListener)
 		{
 			var lookup = new HashSet<string> ();
-			foreach (var testInfo in testInfos)
+			foreach (var testInfo in data)
 				lookup.Add (testInfo.Id);
 
 			TestAssemblyConfiguration conf = LoadTestAssemblyConfiguration(assembly);
@@ -168,60 +175,6 @@ namespace MonoDevelop.XUnit
 				discoveryVisitor.Finished.WaitOne ();
 
 				controller.RunTests (discoveryVisitor.TestCases, executionVisitor, executionOptions);
-			}
-		}
-
-		class TestCaseInfo
-		{
-			public string Id;
-			public string Type;
-			public string Method;
-			public string DisplayName;
-			public object[] Args;
-
-			string name;
-			public string Name {
-				get {
-					if (name == null) {
-						if (DisplayName.StartsWith (Type + "." + Method))
-							name = Method;
-						else
-							name = DisplayName;
-					}
-					return name;
-				}
-			}
-
-			void parseName ()
-			{
-				// this is [theory], xunit v2 where each theory is a separate test case
-				if (Args!=null && Args.Length > 0)
-				{
-					string[] typeParts = Type.Split('.');
-					nameParts = new string[typeParts.Length + 2];
-					typeParts.CopyTo(nameParts, 0);
-					var leftBracket = DisplayName.IndexOf('(');
-					var lastDot = DisplayName.LastIndexOf('.', leftBracket);
-					nameParts[typeParts.Length] = DisplayName.Substring(lastDot + 1);
-					nameParts[typeParts.Length+1] = Method;
-				}
-				// this is [fact]
-				else
-				{
-					string[] typeParts = Type.Split('.');
-					nameParts = new string[typeParts.Length + 1];
-					typeParts.CopyTo(nameParts, 0);
-					nameParts[typeParts.Length] = Method;
-				}
-			}
-
-			string[] nameParts;
-			public string[] NameParts {
-				get {
-					if (nameParts == null)
-						parseName ();
-					return nameParts;
-				}
 			}
 		}
 	}
@@ -254,10 +207,10 @@ namespace MonoDevelop.XUnit
 			this.filter = filter;
 		}
 
-		protected override bool Visit (ITestCaseDiscoveryMessage discovery)
+		protected override bool Visit (ITestCaseDiscoveryMessage testCaseDiscovered)
 		{
-			if (filter == null || filter (discovery.TestCase))
-				TestCases.Add (discovery.TestCase);
+			if (filter == null || filter (testCaseDiscovered.TestCase))
+				TestCases.Add (testCaseDiscovered.TestCase);
 
 			return true;
 		}
