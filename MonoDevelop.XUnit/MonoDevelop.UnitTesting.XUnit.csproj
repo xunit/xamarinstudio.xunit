@@ -43,6 +43,7 @@
     <Compile Include="XUnitTestLoader.cs" />
     <Compile Include="MonoDevelop.UnitTesting.XUnit\RemoteTestResult.cs" />
     <Compile Include="MonoDevelop.UnitTesting.XUnit\ExternalTestRunner.cs" />
+    <Compile Include="UnitTestInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />

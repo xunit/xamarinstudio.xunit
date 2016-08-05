@@ -119,7 +119,7 @@ namespace MonoDevelop.XUnit
 		{
 			using (var session = test.CreateExecutionSession(reportToMonitor)) {
 				using (var runner = new ExternalTestRunner()) {
-					runner.Connect(UnitTesting.XUnit.External.XUnitVersion.XUnit2, context.ExecutionContext.ExecutionHandler).Wait();
+					runner.Connect(XUnitVersion.XUnit2, context.ExecutionContext.ExecutionHandler).Wait();
 					var localTestMonitor = new LocalTestMonitor(context, rootSuite, rootSuite.Name, false);
 
 					string[] nameFilter = new string[testCases.Count];
