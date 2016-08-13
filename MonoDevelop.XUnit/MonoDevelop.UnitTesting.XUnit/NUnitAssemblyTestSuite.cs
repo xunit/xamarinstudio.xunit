@@ -55,6 +55,8 @@ namespace MonoDevelop.UnitTesting.XUnit
 		DateTime lastAssemblyTime;
 		XUnitExecutionSession session;
 
+		UnitTest[] oldList;
+
 		public XUnitAssemblyTestSuite(string name) : base(name)
 		{
 			cache = new XUnitTestInfoCache(this);
@@ -136,6 +138,11 @@ namespace MonoDevelop.UnitTesting.XUnit
 
 			lastAssemblyTime = GetAssemblyTime();
 
+			if (oldList != null) {
+				foreach (UnitTest t in oldList)
+					Tests.Add (t);
+			}
+
 			loader.AsyncLoadTestInfo(this, cache);
 		}
 
@@ -205,6 +212,9 @@ namespace MonoDevelop.UnitTesting.XUnit
 					test = new XUnitTestSuite(this, executor, child);
 				Tests.Add(test);
 			}
+
+			oldList = new UnitTest [Tests.Count];
+			Tests.CopyTo (oldList, 0);
 		}
 
 		protected override bool OnCanRun(IExecutionHandler executionContext)
