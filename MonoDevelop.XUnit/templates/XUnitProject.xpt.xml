@@ -10,7 +10,7 @@
 		<_Description>Creates an xUnit.net v2 library</_Description>
 		<LanguageName>C#</LanguageName>
 		<DefaultFilename>XUnitProject</DefaultFilename>
-		<GroupId>md-nunit-library</GroupId>
+		<GroupId>md-xunit-library</GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
