@@ -115,11 +115,19 @@ namespace MonoDevelop.XUnit
 					LoggingService.LogError (ex.ToString ());
 				}
 
+				//* Uncomment this section to enable easy debugging.
+				var runner = new XUnitRunner.XUnitRunner();
+				testInfo = runner.GetTestInfo(testSuite.AssemblyPath, testSuite.SupportAssemblies.ToArray());
+				testSuite.OnTestSuiteLoaded(testInfo);
+				//*/
+
+				/* Comment this section to enable easy debugging.
 				using (var runner = new ExternalTestRunner()) {
 					runner.Connect(UnitTesting.XUnit.External.XUnitVersion.XUnit2).Wait();
 					testInfo = runner.GetTestInfo(testSuite.AssemblyPath, testSuite.SupportAssemblies.ToList()).Result;
 					testSuite.OnTestSuiteLoaded(testInfo);
 				}
+				//*/
 			}
 		}
 	}

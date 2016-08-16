@@ -6,7 +6,6 @@ using System.Reflection;
 using MonoDevelop.UnitTesting.XUnit;
 using MonoDevelop.XUnit;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace XUnitRunner
 {

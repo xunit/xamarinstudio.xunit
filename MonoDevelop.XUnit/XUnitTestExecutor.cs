@@ -117,6 +117,7 @@ namespace MonoDevelop.XUnit
 		/// </remarks>
 		UnitTestResult Run(List<XUnitTestCase> testCases, XUnitAssemblyTestSuite rootSuite, IExecutableTest test, TestContext context, bool reportToMonitor = true)
 		{
+			//* Comment this section to enable easy debugging.
 			using (var session = test.CreateExecutionSession(reportToMonitor)) {
 				using (var runner = new ExternalTestRunner()) {
 					runner.Connect(XUnitVersion.XUnit2, context.ExecutionContext.ExecutionHandler).Wait();
@@ -134,6 +135,26 @@ namespace MonoDevelop.XUnit
 				}
 				return session.Result;
 			}
+			//*/
+
+			/* Uncomment this section to enable easy debugging. (to be continued)
+			using (var session = test.CreateExecutionSession(reportToMonitor)) {
+				var runner = new XUnitRunner.XUnitRunner();
+				var localTestMonitor = new LocalTestMonitor(context, rootSuite, rootSuite.Name, false);
+
+				string[] nameFilter = new string[testCases.Count];
+				for (var i = 0; i < testCases.Count; ++i) {
+					nameFilter[i] = testCases[i].TestInfo.Id;
+				}
+
+				var path = rootSuite.AssemblyPath;
+				var supportAssemblies = new List<string>();
+				var crashLogFile = Path.GetTempFileName();
+				runner.Execute(path, nameFilter, localTestMonitor);
+
+				return session.Result;
+			}
+			//*/
 		}
 	}
 }

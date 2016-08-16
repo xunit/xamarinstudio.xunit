@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\xunit.core.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.core.props" Condition="Exists('..\packages\xunit.core.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.core.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -44,6 +45,18 @@
     <Compile Include="MonoDevelop.UnitTesting.XUnit\RemoteTestResult.cs" />
     <Compile Include="MonoDevelop.UnitTesting.XUnit\ExternalTestRunner.cs" />
     <Compile Include="UnitTestInfo.cs" />
+    <Compile Include="..\XUnitRunner\XUnitRunner.cs">
+      <Link>XUnitRunner.cs</Link>
+    </Compile>
+    <Compile Include="..\XUnitRunner\RemoteXUnitRunner.cs">
+      <Link>RemoteXUnitRunner.cs</Link>
+    </Compile>
+    <Compile Include="..\XUnitRunner\DefaultDiscoveryVisitor.cs">
+      <Link>DefaultDiscoveryVisitor.cs</Link>
+    </Compile>
+    <Compile Include="..\XUnitRunner\DefaultExecutionVisitor.cs">
+      <Link>DefaultExecutionVisitor.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />
@@ -72,6 +85,15 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="xunit.runner.utility.desktop">
       <HintPath>..\packages\xunit.runner.utility.2.1.0\lib\net35\xunit.runner.utility.desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.core">
+      <HintPath>..\packages\xunit.extensibility.core.2.1.0\lib\dotnet\xunit.core.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.execution.desktop">
+      <HintPath>..\packages\xunit.extensibility.execution.2.1.0\lib\net45\xunit.execution.desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.assert">
+      <HintPath>..\packages\xunit.assert.2.1.0\lib\dotnet\xunit.assert.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
