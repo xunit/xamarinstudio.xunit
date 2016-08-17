@@ -24,14 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using MonoDevelop.Core;
-using System.Linq;
-using System.Runtime.Remoting;
 using MonoDevelop.UnitTesting.XUnit;
 using MonoDevelop.UnitTesting;
-using Newtonsoft.Json;
 using MonoDevelop.UnitTesting.XUnit.External;
 using System.IO;
 
