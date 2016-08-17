@@ -28,16 +28,11 @@
 
 
 using System;
-using System.Reflection;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
-using System.Text;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Assemblies;
 using System.Threading.Tasks;
 using MonoDevelop.XUnit;
 
@@ -234,22 +229,10 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 		}
 	}
 
-    public interface IRemoteEventListener
-    {
-		void OnTestCaseStarting(string id);
-		void OnTestCaseFinished(string id);
-		void OnTestFailed(string id,
-			decimal executionTime, string output, string[] exceptionTypes, string[] messages, string[] stackTraces);
-		void OnTestPassed(string id,
-			decimal executionTime, string output);
-		void OnTestSkipped(string id,
-			string reason);
-    }
-
-    public enum XUnitVersion
-    {
-        Unknown,
-        XUnit,
-        XUnit2
-    }
+	public enum XUnitVersion
+	{
+		Unknown,
+		XUnit,
+		XUnit2
+	}
 }

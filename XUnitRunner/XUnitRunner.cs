@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using MonoDevelop.UnitTesting.XUnit;
+using MonoDevelop.UnitTesting.XUnit.External;
 using MonoDevelop.XUnit;
 using Xunit;
 
@@ -140,7 +141,7 @@ namespace XUnitRunner
 		/// <param name="testInfos">Test infos.</param>
 		/// <param name="executionListener">Execution listener.</param>
 		/// <remarks>It uses xunit execution engine to execute the test cases.</remarks>
-		public void Execute(string assembly, string[] nameFilter, IXUnitExecutionListener executionListener)
+		public void Execute(string assembly, string[] nameFilter, IRemoteEventListener executionListener)
 		{
 			var lookup = new HashSet<string>();
 			foreach (var testId in nameFilter)

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using MonoDevelop.UnitTesting.XUnit.External;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -6,9 +6,9 @@ namespace XUnitRunner
 {
 	public class DefaultExecutionVisitor:TestMessageVisitor<ITestAssemblyFinished>
 	{
-		IXUnitExecutionListener executionListener;
+		readonly IRemoteEventListener executionListener;
 
-		public DefaultExecutionVisitor(IXUnitExecutionListener executionListener)
+		public DefaultExecutionVisitor(IRemoteEventListener executionListener)
 		{
 			this.executionListener = executionListener;
 		}

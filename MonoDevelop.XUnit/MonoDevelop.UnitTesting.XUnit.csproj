@@ -57,6 +57,7 @@
     <Compile Include="..\XUnitRunner\DefaultExecutionVisitor.cs">
       <Link>DefaultExecutionVisitor.cs</Link>
     </Compile>
+    <Compile Include="MonoDevelop.UnitTesting.XUnit\IRemoteEventListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />

@@ -64,6 +64,9 @@
     <Compile Include="..\MonoDevelop.XUnit\UnitTestInfo.cs">
       <Link>UnitTestInfo.cs</Link>
     </Compile>
+    <Compile Include="..\MonoDevelop.XUnit\MonoDevelop.UnitTesting.XUnit\IRemoteEventListener.cs">
+      <Link>IRemoteEventListener.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

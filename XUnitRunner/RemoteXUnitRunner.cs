@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.UnitTesting.XUnit;
+using MonoDevelop.UnitTesting.XUnit.External;
 using Xunit.Abstractions;
 
 namespace XUnitRunner
@@ -39,20 +40,7 @@ namespace XUnitRunner
 		}
 	}
 
-
-	public interface IXUnitExecutionListener
-	{
-		void OnTestCaseStarting(string id);
-		void OnTestCaseFinished(string id);
-		void OnTestFailed(string id,
-			decimal executionTime, string output, string[] exceptionTypes, string[] messages, string[] stackTraces);
-		void OnTestPassed(string id,
-			decimal executionTime, string output);
-		void OnTestSkipped(string id,
-			string reason);
-	}
-
-	class EventListenerWrapper : IXUnitExecutionListener
+    class EventListenerWrapper : IRemoteEventListener
 	{
 		RemoteProcessServer server;
 		public EventListenerWrapper (RemoteProcessServer server)
