@@ -90,15 +90,15 @@ namespace MonoDevelop.XUnit
 							continue;
 						}
 					}
+
+					using (var runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(XUnitTestRunner), false)) {
+						testInfo = runner.GetTestInfo (testSuite.AssemblyPath, testSuite.SupportAssemblies.ToArray());
+					}
+
+					testSuite.OnTestSuiteLoaded (testInfo);
 				} catch (Exception ex) {
-					LoggingService.LogError (ex.ToString ());
+					LoggingService.LogError(ex.ToString());
 				}
-
-				using (var runner = (XUnitTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(XUnitTestRunner), false)) {
-					testInfo = runner.GetTestInfo (testSuite.AssemblyPath, testSuite.SupportAssemblies.ToArray());
-				}
-
-				testSuite.OnTestSuiteLoaded (testInfo);
 			}
 		}
 	}
