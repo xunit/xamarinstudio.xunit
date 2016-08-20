@@ -45,7 +45,13 @@ namespace XUnitRunner
 		TestAssemblyConfiguration LoadTestAssemblyConfiguration(string assembly)
 		{
 			Type t = Type.GetType("Mono.Runtime");
-			var conf = ConfigReader.Load(assembly);
+			TestAssemblyConfiguration conf;
+			try {
+				conf = ConfigReader.Load(assembly);
+			} catch (FileNotFoundException) {
+				conf = new TestAssemblyConfiguration();
+			}
+
 			if (t != null) {
 				// TODO: support below
 				conf.PreEnumerateTheories = true;
