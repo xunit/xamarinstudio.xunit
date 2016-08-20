@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+
 namespace MonoDevelop.UnitTesting.XUnit
 {
 	internal class TestCaseInfo
@@ -17,7 +19,7 @@ namespace MonoDevelop.UnitTesting.XUnit
 				nameParts = new string[typeParts.Length + 2];
 				typeParts.CopyTo(nameParts, 0);
 				nameParts[typeParts.Length] = Method;
-				DisplayName = Method + '(' + string.Join(",", Args) + ')';
+				DisplayName = Method + '(' + string.Join(",", Args.Select(item => item == null ? "null" : $"\"{item}\"")) + ')';
 				nameParts[typeParts.Length + 1] = DisplayName;
 			}
 			// this is [fact]
