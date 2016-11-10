@@ -51,7 +51,7 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 		{
 			var exePath = Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), version.ToString(), "XUnitRunner.exe");
 			connection = new RemoteProcessConnection(exePath, executionHandler, console, Runtime.MainSynchronizationContext);
-			connection.AddListener(this);
+			connection.AddListener(this); // execution handler is where the debugger kicks in.
 			return connection.Connect();
 		}
 
@@ -149,6 +149,7 @@ namespace MonoDevelop.UnitTesting.XUnit.External
     {
         TestContext context;
         UnitTest rootTest;
+		public bool Canceled;
 
         public LocalTestMonitor (TestContext context, UnitTest rootTest, string rootFullName, bool singleTestRun)
         {
@@ -190,6 +191,9 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 
 		public void OnTestCaseStarting(string id)
 		{
+			if (Canceled)
+				return;
+			
 			var t = GetLocalTest(id);
 			if (t == null)
 				return;
@@ -198,6 +202,8 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 
 		public void OnTestCaseFinished(string id)
 		{
+			if (Canceled)
+				return;
 			var t = GetLocalTest(id);
 			if (t == null)
 				return;

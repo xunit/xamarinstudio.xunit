@@ -29,6 +29,8 @@ using MonoDevelop.UnitTesting.XUnit;
 using MonoDevelop.UnitTesting;
 using MonoDevelop.UnitTesting.XUnit.External;
 using System.IO;
+using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.XUnit
 {
@@ -139,12 +141,63 @@ namespace MonoDevelop.XUnit
 
 					var path = rootSuite.AssemblyPath;
 					var supportAssemblies = new List<string>();
+
+					RunData rd = new RunData();
+					rd.Runner = runner;
+					rd.LocalMonitor = localTestMonitor;
+
+					var cancelReg = context.Monitor.CancellationToken.Register(rd.Cancel);
+
+					UnitTestResult result;
 					var crashLogFile = Path.GetTempFileName();
-					runner.Run(localTestMonitor, nameFilter, path, "", supportAssemblies, null, null, crashLogFile).Wait();
+
+					try {
+
+						context.Monitor.CancellationToken.ThrowIfCancellationRequested();
+
+						runner.Run(localTestMonitor, nameFilter, path, "", supportAssemblies, null, null, crashLogFile).Wait();
+
+					} catch (Exception ex) {
+						if (!localTestMonitor.Canceled) {
+							LoggingService.LogError(ex.ToString());
+							result = UnitTestResult.CreateFailure(ex);
+						} else {
+							result = UnitTestResult.CreateFailure(GettextCatalog.GetString("Canceled"), null);
+						}
+					} finally {
+						// Dispose the runner before the console, to make sure the console is available until the runner is disposed.
+						runner.Dispose();
+						cancelReg.Dispose();
+						File.Delete(crashLogFile);
+					}
+				
 				}
 				return session.Result;
 			}
 #endif
+		}
+
+		class RunData
+		{
+			public ExternalTestRunner Runner;
+			public UnitTest Test;
+			public LocalTestMonitor LocalMonitor;
+
+			public void Cancel()
+			{
+				LocalMonitor.Canceled = true;
+				Runner.Dispose();
+				ClearRunningStatus(Test);
+			}
+
+			void ClearRunningStatus(UnitTest t)
+			{
+				t.Status = TestStatus.Ready;
+				UnitTestGroup group = t as UnitTestGroup;
+				if (group == null) return;
+				foreach (UnitTest ct in group.Tests)
+					ClearRunningStatus(ct);
+			}
 		}
 	}
 }
