@@ -2,12 +2,12 @@
 using Mono.Addins.Description;
 
 [assembly:Addin (
-	"MonoDevelop.XUnit2", 
-	Namespace = "MonoDevelop.XUnit",
-	Version = "0.6.12"
+	"MonoDevelop.Dumb", 
+	Namespace = "MonoDevelop.Dumb",
+	Version = "0.6.99"
 )]
 
-[assembly:AddinName ("xUnit.NET 2 testing framework support")]
+[assembly:AddinName ("Dumb addin")]
 [assembly:AddinCategory ("Testing")]
-[assembly:AddinDescription ("Integrates xUnit.NET 2 into the MonoDevelop / Xamarin Studio IDE.")]
+[assembly:AddinDescription ("Dumb addin for MonoDevelop / Xamarin Studio IDE.")]
 [assembly:AddinAuthor ("Sergey Khabibullin/Lex Li/Zheng Wang")]
