@@ -26,6 +26,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
+using System.Linq;
+using System.Reflection;
+using Mono.Addins;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
@@ -42,8 +47,18 @@ namespace MonoDevelop.UnitTesting.XUnit
 		/// </summary>
 		public SystemTestProvider ()
 		{
+			var attribute = GetAssemblyAttribute<AddinAttribute> (Assembly.GetExecutingAssembly ());
+			LoggingService.LogInfo ($"xUnit.net for MonoDevelop/Xamarin Studio version {attribute.Version}");
 			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChanged;
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChanged;
+		}
+
+		static T GetAssemblyAttribute<T>(System.Reflection.Assembly ass) where T : Attribute
+		{
+			object[] attributes = ass.GetCustomAttributes(typeof(T), false);
+			if (attributes == null || attributes.Length == 0)
+				return null;
+			return attributes.OfType<T>().SingleOrDefault();
 		}
 
 		/// <summary>

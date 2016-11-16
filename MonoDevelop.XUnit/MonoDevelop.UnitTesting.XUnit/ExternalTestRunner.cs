@@ -149,7 +149,7 @@ namespace MonoDevelop.UnitTesting.XUnit.External
     {
         TestContext context;
         UnitTest rootTest;
-		public bool Canceled;
+        public bool Canceled;
 
         public LocalTestMonitor (TestContext context, UnitTest rootTest, string rootFullName, bool singleTestRun)
         {
