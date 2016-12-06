@@ -11,9 +11,18 @@
 ## Working on MonoDevelop/Xamarin Studio 6.x
 
 1. Prepare a Windows machine.
-1. Install Xamarin Studio 6.0 from [Xamarin](http://xamarin.com/).
-1. Launch Xamarin Studio and install MonoDevelop.AddinMaker from the MD/XS Addin Gallery.
-1. Clone the repo to a local path such as `D:\xamarinstudio.xunit`.
-1. Switch to 6.0 branch.
+1. Install Xamarin Studio 6.0 from [Xamarin](http://xamarin.com/). 
+1. Launch Xamarin Studio and install MonoDevelop.AddinMaker from the MD/XS Addin Gallery. 
+1. Clone the repo to a local path such as `D:\xamarinstudio.xunit`. 
+1. Switch to 6.0 branch. 
 1. Launch Xamarin Studio and open MonoDevelop.UnitTesting.XUnit.sln from the repo.
+
+## Working on Visual Studio for Mac
+
+1. Prepare a Windows machine.
+1. Install Visual Studio for Mac.
+1. Launch Visual Studio for Mac and install AddinMaker (not yet ready).
+1. Clone the repo to a local path such as `D:\xamarinstudio.xunit`.
+1. Switch to 7.0 branch.
+1. Launch Visual Studio for Mac and open MonoDevelop.UnitTesting.XUnit.sln from the repo.
 1. Debug this project, and a new Xamarin Studio instance is opened with this addin installed.
