@@ -27,7 +27,7 @@
 	<Extension path = "/MonoDevelop/UnitTesting/UnitTestMarkers">
 		<TestMarkers
 				testMethodAttributeMarker="Xunit.FactAttribute"
-				testCaseMethodAttributeMarker="XUnit.TheoryAttribute"
+				testCaseMethodAttributeMarker="Xunit.TheoryAttribute"
 			/>
 	</Extension>
 	
