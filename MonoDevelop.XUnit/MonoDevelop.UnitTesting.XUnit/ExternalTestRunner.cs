@@ -105,8 +105,12 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 				Path = path,
 				SupportAssemblies = supportAssemblies.ToArray()
 			};
-
-			return (await connection.SendMessage(msg)).Result;
+			try {
+				return (await connection.SendMessage(msg)).Result;
+			} catch (Exception ex) {
+				LoggingService.LogError(ex.ToString ());
+				return new XUnitTestInfo();
+			}
 		}
 
 		[MessageHandler]
