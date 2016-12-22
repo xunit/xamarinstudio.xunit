@@ -109,15 +109,14 @@ namespace XUnitRunner
 
 			// if the test is the last element in the group
 			// then it's going to be a leaf node in the structure
-			if (count == 1) {
-				if (step == firstItem.NameParts.Length) {
-					testInfo.Id = firstItem.Id;
-					testInfo.Type = firstItem.Type;
-					testInfo.Method = firstItem.Method;
-					testInfo.Name = firstItem.DisplayName;
-					testInfo.Args = firstItem.Args;
-					return;
-				}
+			// we want add all test cases
+			if (count == 1 || step > firstItem.NameParts.Length - 1)  {
+				testInfo.Id = firstItem.Id;
+				testInfo.Type = firstItem.Type;
+				testInfo.Method = firstItem.Method;
+				testInfo.Name = firstItem.DisplayName;
+				testInfo.Args = firstItem.Args;
+				return;
 			}
 
 			// build the tree structure based on the parts of the name, so
