@@ -99,9 +99,17 @@ namespace MonoDevelop.XUnit
 
 				XUnitTestInfo testInfo;
 				try {
+#if EASY_DEBUGGING
 					var runner = new XUnitRunner.XUnitRunner();
 					testInfo = runner.GetTestInfo(testSuite.AssemblyPath, testSuite.SupportAssemblies.ToArray());
 					testSuite.OnTestSuiteLoaded(testInfo);
+#else
+					using (var runner = new ExternalTestRunner()) {
+						runner.Connect(XUnitVersion.XUnit2).Wait();		
+ 						testInfo = runner.GetTestInfo(testSuite.AssemblyPath, testSuite.SupportAssemblies.ToList()).Result;		
+ 						testSuite.OnTestSuiteLoaded(testInfo);		
+ 					}
+#endif
 				} catch (Exception ex) {
 					LoggingService.LogError(ex.ToString());
 				}
