@@ -1,15 +1,15 @@
 A Short History of This Project
 ===============================
 
-xUnit support has been wanted for a long time by MonoDevelop/Xamarin Studio users, but it wasn't available until Sergey Khabibullin from Russia implemented an addin
-during Google Summer of Code under Xamarin's supervision.
+xUnit support has been requested for a long time by MonoDevelop/Xamarin Studio users, but it wasn't available until Sergey Khabibullin implemented an addin
+during Google Summer of Code 2014 under Xamarin's supervision.
 
-Later this addin project has been accepted by xUnit guys and becomes part of xUnit family at GitHub.
+Later this addin project has been accepted by xUnit guys and becomes part of xUnit family at GitHub. However, this addin was made for xUnit 1.x. After release 
+of xUnit 2.x, many issues had been found while Sergey could not continue to work on this addin.
 
-However, the upgrade of xUnit to 2.x broke this addin, and users started to complain.
-
-Lex Li started to review this project in Jan 2016, and then finished his initial experiments in Feb. He took over this project officially on May 23. Zheng Wang and 
-Matt Ward contributed important patches to move this project forward. Mikayla Hutchinson from Xamarin also kindly shared her advice to guide the development.
+Lex Li started to review this project in Jan 2016, and then finished his initial experiments in Feb. He took over this project officially on May 23. Zheng Wang, 
+Matt Ward, and Jose Medrano contributed important patches to move this project forward. Mikayla Hutchinson from Xamarin also kindly shared her advice to guide 
+the development.
 
 Now this addin works fine with Xamarin Studio 6, MonoDevelop 5/6, and is almost ready for Visual Studio for Mac Preview (7). Community members are welcome to raise 
 issues and send patches at GitHub.
