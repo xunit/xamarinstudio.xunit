@@ -232,20 +232,5 @@ namespace MonoDevelop.UnitTesting.XUnit
 			UpdateTests();
 			base.OnActiveConfigurationChanged();
 		}
-
-		public override void Dispose()
-		{
-			try
-			{
-				if (CachePath != null)
-				{
-					cache.WriteToDisk();
-				}
-			}
-			catch
-			{
-			}
-			base.Dispose();
-		}
 	}
 }

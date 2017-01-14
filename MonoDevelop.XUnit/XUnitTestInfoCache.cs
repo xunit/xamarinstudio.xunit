@@ -69,25 +69,6 @@ namespace MonoDevelop.XUnit
 			return null;
 		}
 
-		public void ReadFromDisk ()
-		{
-			using (var stream = new FileStream (testSuite.CachePath, FileMode.Open, FileAccess.Read)) {
-				var formatter = new BinaryFormatter ();
-				cachedTestInfo = (CachedTestInfo)formatter.Deserialize (stream);
-				modified = false;
-			}
-		}
-
-		public void WriteToDisk ()
-		{
-			if (modified && cachedTestInfo.TestInfo != null) {
-				using (var stream = new FileStream (testSuite.CachePath, FileMode.Create, FileAccess.Write)) {
-					var formatter = new BinaryFormatter ();
-					formatter.Serialize (stream, cachedTestInfo);
-				}
-			}
-		}
-
 		[Serializable]
 		class CachedTestInfo
 		{
