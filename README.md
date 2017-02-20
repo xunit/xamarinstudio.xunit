@@ -6,16 +6,23 @@ Integrates xUnit.NET into the MonoDevelop / Xamarin Studio IDE.
 
 Copyright (c) Sergey Khabibullin/Lex Li/Zheng Wang
 
-Installation
-------------
+MonoDevelop/Xamarin Studio Installation
+---------------------------------------
 1. Open MonoDevelop or Xamarin Studio.
 1. Use Add-ins... menu item to launch Add-in Manager.
 1. Click Gallery tag, and make sure "All repositories" is selected as Repository.
 1. Choose "xUnit.NET 2 testing framework support" under Testing, and click Install button.
 
+Visual Studio for Mac Installation
+----------------------------------
+1. Open Visual Studio for Mac.
+1. Use Extensions... menu item to launch Extension Manager.
+1. Click Gallery tag, and make sure "All repositories" is selected as Repository.
+1. Choose "xUnit.NET 2 testing framework support" under Testing, and click Install button.
+
 Usage
 -----
-Upon installation, the Unit Tests panel in Xamarin Studio/MonoDevelop starts to recognize xUnit.net test cases. Then you can run/debug test cases.
+Upon installation, the Unit Tests panel in Xamarin Studio/MonoDevelop/Visual Studio for Mac starts to recognize xUnit.net test cases. Then you can run/debug test cases.
 
 Extra Note
 ----------
