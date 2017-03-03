@@ -37,6 +37,8 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.UnitTesting.XUnit.External;
 using ProjectReference = MonoDevelop.Projects.ProjectReference;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MonoDevelop.UnitTesting.XUnit
 {
@@ -48,6 +50,7 @@ namespace MonoDevelop.UnitTesting.XUnit
         DotNetProject project;
         string resultsPath;
         string storeId;
+		static string PROJECT_JSON = "project.json";
 
         public XUnitProjectTestSuite (DotNetProject project) : base (project.Name, project)
         {
@@ -102,11 +105,17 @@ namespace MonoDevelop.UnitTesting.XUnit
             if (!project.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration).BuildEnabledForItem (project))
                 return null;
 
-            foreach (var p in project.References) {
-                var nv = GetXUnitVersion (p);
-                if (nv != null)
-                    return new XUnitProjectTestSuite (project);
-            }
+			// First test against nuget V3 API first
+			if (HasXunitReference(project))
+				return new XUnitProjectTestSuite(project);
+			else {
+				foreach (var p in project.References) {
+					var nv = GetXUnitVersion(p);
+					if (nv != null)
+						return new XUnitProjectTestSuite(project);
+				}
+			}
+
             return null;
         }
 
@@ -119,6 +128,16 @@ namespace MonoDevelop.UnitTesting.XUnit
         {
             return GetXUnitVersion (p).HasValue;
         }
+
+		/// <summary>
+		/// Tests if a reference is from xunit.net.
+		/// </summary>
+		/// <returns><code>true</code> if the reference is from xunit.net. Otherwise, <code>false</code>.</returns>
+		/// <param name="args">Any changed file in the project.</param>
+		public static bool IsXUnitRelevant(ProjectFileEventArgs args)
+		{
+			return IsProjectJson(args);
+		}
 
         /// <summary>
         /// Gets the xunit.net version from the reference.
@@ -134,6 +153,7 @@ namespace MonoDevelop.UnitTesting.XUnit
 
             return null;
         }
+
 
 		/// <summary>
 		/// Gets the source code location.
@@ -154,6 +174,41 @@ namespace MonoDevelop.UnitTesting.XUnit
                 return null;
             return task.Result;
         }
+
+		protected static string GetAssemblyPath(Project project)
+		{
+			return project.GetOutputFileName(IdeApp.Workspace.ActiveConfiguration);
+		}
+
+		protected static bool HasProjectJson(Project project)
+		{
+			return project.MSBuildProject.ItemGroups.SelectMany(x => x.Items).Where(x => x.Include == XUnitProjectTestSuite.PROJECT_JSON).Count() > 0;
+		}
+
+		protected static bool IsProjectJson(ProjectFileEventArgs args)
+		{
+			var projectEvent = args.FirstOrDefault();
+			return projectEvent.ProjectFile.Name.IndexOf(XUnitProjectTestSuite.PROJECT_JSON, StringComparison.OrdinalIgnoreCase) != -1 &&
+				               HasProjectJson(projectEvent.Project);
+		}
+
+		protected static bool HasXunitReference(Project project)
+		{
+			if (HasProjectJson(project)) {
+				var jsonFile = Path.Combine(project.BaseDirectory, "project.json");
+				if (File.Exists(jsonFile)) {
+					using (StreamReader file = File.OpenText(jsonFile))
+					using (JsonTextReader reader = new JsonTextReader(file)) {
+						var jProject = JToken.ReadFrom(reader);
+						var dependencies = jProject["dependencies"].Value<JObject>();
+						List<string> dependency = dependencies.Properties().Select(p => p.Name).ToList();
+						return dependency.Count(x => x == "xunit") > 0;
+					}
+				}
+			}
+
+			return false;
+		}
 
         void OnProjectRenamed (object sender, SolutionItemRenamedEventArgs e)
         {
