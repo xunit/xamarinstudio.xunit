@@ -51,6 +51,7 @@ namespace MonoDevelop.UnitTesting.XUnit
 			LoggingService.LogInfo ($"xUnit.net for MonoDevelop/Xamarin Studio version {attribute.Version}");
 			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChanged;
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChanged;
+			IdeApp.Workspace.FileChangedInProject += OnFileChanged;
 		}
 
 		static T GetAssemblyAttribute<T>(System.Reflection.Assembly ass) where T : Attribute
@@ -92,6 +93,12 @@ namespace MonoDevelop.UnitTesting.XUnit
 				UnitTestService.ReloadTests (); // trigger a panel refresh.
 		}
 
+		void OnFileChanged(object s, ProjectFileEventArgs args)
+		{
+			if (XUnitProjectTestSuite.IsXUnitRelevant(args))
+				UnitTestService.ReloadTests(); // trigger a panel refresh.
+		}
+
 		/// <summary>
 		/// Releases all resource used by the <see cref="T:MonoDevelop.UnitTesting.XUnit.SystemTestProvider"/> object.
 		/// </summary>
@@ -105,6 +112,7 @@ namespace MonoDevelop.UnitTesting.XUnit
 		{
 			IdeApp.Workspace.ReferenceAddedToProject -= OnReferenceChanged;
 			IdeApp.Workspace.ReferenceRemovedFromProject -= OnReferenceChanged;
+			IdeApp.Workspace.FileChangedInProject -= OnFileChanged;
 		}
 	}
 }
