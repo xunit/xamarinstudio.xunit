@@ -11,6 +11,8 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <RootNamespace>MonoDevelop.UnitTesting.XUnit</RootNamespace>
     <AssemblyName>MonoDevelop.XUnit</AssemblyName>
+    <MDProfileVersion Condition="'$(MDProfileVersion)' == ''">7.0</MDProfileVersion>
+    <MDBinDir Condition="'$(MDBinDir)' == ''">/Applications/Visual Studio.app/Contents/Resources/lib/monodevelop/bin/</MDBinDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
