@@ -110,7 +110,8 @@ namespace XUnitRunner
 			// if the test is the last element in the group
 			// then it's going to be a leaf node in the structure
 			// we want add all test cases
-			if (count == 1 || step > firstItem.NameParts.Length - 1)  {
+			var parts = firstItem.NameParts; // force name parsing.
+			if (count == 1 || step > parts.Length - 1)  {
 				testInfo.Id = firstItem.Id;
 				testInfo.Type = firstItem.Type;
 				testInfo.Method = firstItem.Method;
