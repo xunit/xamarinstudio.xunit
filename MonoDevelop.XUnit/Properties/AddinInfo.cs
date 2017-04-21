@@ -4,10 +4,10 @@ using Mono.Addins.Description;
 [assembly:Addin (
 	"MonoDevelop.XUnit2", 
 	Namespace = "MonoDevelop.XUnit",
-	Version = "0.7.2"
+	Version = "0.7.3"
 )]
 
 [assembly:AddinName ("xUnit.NET 2 testing framework support")]
 [assembly:AddinCategory ("Testing")]
-[assembly:AddinDescription ("Integrates xUnit.NET 2 into the MonoDevelop / Xamarin Studio IDE.")]
+[assembly:AddinDescription ("Integrates xUnit.NET 2 into Visual Studio for Mac.")]
 [assembly:AddinAuthor ("Sergey Khabibullin and other contributors")]
