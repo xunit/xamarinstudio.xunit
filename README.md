@@ -15,6 +15,9 @@ MonoDevelop/Xamarin Studio Installation
 
 Visual Studio for Mac Installation
 ----------------------------------
+> IMPORTANT: Starting from v0.7.3, please download the .mpack files from https://github.com/xunit/xamarinstudio.xunit/releases
+> Then in Extension Manager you can use "Install from file..." button to manually install this extension.
+
 1. Open Visual Studio for Mac.
 1. Use Extensions... menu item to launch Extension Manager.
 1. Click Gallery tag, and make sure "All repositories" is selected as Repository.
