@@ -4,11 +4,12 @@
 		<Import assembly="xunit.abstractions.dll" />
 		<Import assembly="xunit.runner.utility.desktop.dll" />
 		<Import file="XUnit2/XUnitRunner.exe" />
+		<Import file="XUnit2/System.Runtime.InteropServices.RuntimeInformation.dll" />
 		<Import file="XUnit2/xunit.abstractions.dll" />
 		<Import file="XUnit2/xunit.assert.dll" />
 		<Import file="XUnit2/xunit.core.dll" />
 		<Import file="XUnit2/xunit.execution.desktop.dll" />
-		<Import file="XUnit2/xunit.runner.utility.desktop.dll" />
+		<Import file="XUnit2/xunit.runner.utility.net452.dll" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/UnitTesting/TestProviders">
