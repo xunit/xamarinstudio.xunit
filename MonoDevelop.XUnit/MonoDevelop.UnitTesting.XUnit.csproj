@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\MonoDevelop.Addins.0.3.10\build\net40\MonoDevelop.Addins.props" Condition="Exists('..\packages\MonoDevelop.Addins.0.3.10\build\net40\MonoDevelop.Addins.props')" />
+  <Import Project="..\packages\MonoDevelop.Addins.0.3.14\build\net45\MonoDevelop.Addins.props" Condition="Exists('..\packages\MonoDevelop.Addins.0.3.14\build\net45\MonoDevelop.Addins.props')" />
   <Import Project="..\packages\xunit.core.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.core.props" Condition="Exists('..\packages\xunit.core.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.core.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -8,7 +8,6 @@
     <ProjectTypeGuids>{86F6BF2A-E449-4B3E-813B-9ACC37E5545F};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProjectGuid>{749EF588-C012-4A59-AA3C-B7722AAC0A09}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <RootNamespace>MonoDevelop.UnitTesting.XUnit</RootNamespace>
     <AssemblyName>MonoDevelop.XUnit</AssemblyName>
     <MDProfileVersion Condition="'$(MDProfileVersion)' == ''">7.0</MDProfileVersion>
@@ -103,5 +102,5 @@
     <Folder Include="templates\" />
     <Folder Include="MonoDevelop.UnitTesting.XUnit\" />
   </ItemGroup>
-  <Import Project="..\packages\MonoDevelop.Addins.0.3.10\build\net40\MonoDevelop.Addins.targets" Condition="Exists('..\packages\MonoDevelop.Addins.0.3.10\build\net40\MonoDevelop.Addins.targets')" />
+  <Import Project="..\packages\MonoDevelop.Addins.0.3.14\build\net45\MonoDevelop.Addins.targets" Condition="Exists('..\packages\MonoDevelop.Addins.0.3.14\build\net45\MonoDevelop.Addins.targets')" />
 </Project>
