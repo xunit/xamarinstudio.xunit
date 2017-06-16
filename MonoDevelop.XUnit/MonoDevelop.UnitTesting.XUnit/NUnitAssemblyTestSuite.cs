@@ -200,18 +200,21 @@ namespace MonoDevelop.UnitTesting.XUnit
 
 		void FillTests(XUnitTestInfo testInfo)
 		{
-			if (testInfo == null || testInfo.Tests == null)
+			if (testInfo == null)
 				return;
 
-			foreach (var child in testInfo.Tests)
-			{
-				UnitTest test;
-				if (child.Tests == null)
-					test = new XUnitTestCase(this, executor, child);
-				else
-					test = new XUnitTestSuite(this, executor, child);
-				Tests.Add(test);
-			}
+			if (testInfo.Tests == null)
+				Tests.Add(new XUnitTestCase(this, executor, testInfo));
+			else
+				foreach (var child in testInfo.Tests)
+				{
+					UnitTest test;
+					if (child.Tests == null)
+						test = new XUnitTestCase(this, executor, child);
+					else
+						test = new XUnitTestSuite(this, executor, child);
+					Tests.Add(test);
+				}
 
 			oldList = new UnitTest [Tests.Count];
 			Tests.CopyTo (oldList, 0);
