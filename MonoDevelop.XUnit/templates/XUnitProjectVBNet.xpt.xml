@@ -32,10 +32,10 @@
 			</References>
 
 			<Packages>
-				<Package ID="xunit" Version="2.1.0" />
-				<Package ID="xunit.abstractions" Version="2.0.0" />
-				<Package ID="xunit.assert" Version="2.1.0" />
-				<Package ID="xunit.core" Version="2.1.0" />
+				<Package ID="xunit" Version="2.2.0" />
+				<Package ID="xunit.abstractions" Version="2.0.1" />
+				<Package ID="xunit.assert" Version="2.2.0" />
+				<Package ID="xunit.core" Version="2.2.0" />
 			</Packages>
 
 			<Files>
