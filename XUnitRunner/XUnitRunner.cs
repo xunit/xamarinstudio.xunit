@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -145,7 +145,6 @@ namespace XUnitRunner
 		/// Execute test cases.
 		/// </summary>
 		/// <param name="assembly">Assembly.</param>
-		/// <param name="testInfos">Test infos.</param>
 		/// <param name="executionListener">Execution listener.</param>
 		/// <remarks>It uses xunit execution engine to execute the test cases.</remarks>
 		public void Execute(string assembly, string[] nameFilter, IRemoteEventListener executionListener)
