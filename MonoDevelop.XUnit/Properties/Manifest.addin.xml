@@ -2,7 +2,7 @@
 <ExtensionModel>
 	<Runtime>
 		<Import assembly="xunit.abstractions.dll" />
-		<Import assembly="xunit.runner.utility.desktop.dll" />
+		<Import assembly="xunit.runner.utility.net452.dll" />
 		<Import file="XUnit2/XUnitRunner.exe" />
 		<Import file="XUnit2/System.Runtime.InteropServices.RuntimeInformation.dll" />
 		<Import file="XUnit2/xunit.abstractions.dll" />
