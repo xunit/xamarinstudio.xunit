@@ -38,4 +38,5 @@ Upon installation, the Unit Tests panel in MonoDevelop/Visual Studio for Mac sta
 Extra Note
 ----------
 * The add-in can be manually downloaded from [here](http://addins.monodevelop.com/Project/Index/220) if you cannot use Add-in Manager.
+* **Running .NET Core based unit test projects in Visual Studio for Mac does not require this extension.** This extension is only needed if you wantto run Mono based unit test projects. Thus, don't report .NET Core based issues to this repo.
 * Anyone who wants to contribute to this project, please check [the contributing guide](https://github.com/xunit/xamarinstudio.xunit/blob/master/CONTRIBUTING.md) to see how to set up the development environment.
