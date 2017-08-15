@@ -20,7 +20,6 @@ namespace XUnitRunner
 		public static void PreloadAssemblies()
 		{
 			var path = Path.GetDirectoryName(typeof(XUnitRunner).Assembly.Location);
-			Assembly.LoadFrom(Path.Combine(path, "System.Runtime.InteropServices.RuntimeInformation.dll"));
 			Assembly.LoadFrom(Path.Combine(path, "xunit.abstractions.dll"));
 			Assembly.LoadFrom(Path.Combine(path, "xunit.assert.dll"));
 			Assembly.LoadFrom(Path.Combine(path, "xunit.core.dll"));
