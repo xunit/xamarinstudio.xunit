@@ -7,7 +7,7 @@
     <ProjectGuid>{130F2779-DC0E-4E77-8041-D46CC3F6148D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>XUnitRunner</RootNamespace>
-    <AssemblyName>XUnitRunner</AssemblyName>
+    <AssemblyName>XUnitRunner.x86</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -19,7 +19,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ExternalConsole>true</ExternalConsole>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -54,15 +54,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="XUnitRunner.cs" />
-    <Compile Include="Sample.cs" />
-    <Compile Include="DefaultDiscoveryVisitor.cs" />
-    <Compile Include="DefaultExecutionVisitor.cs" />
-    <Compile Include="MonoDevelop.From\BinaryMessage.cs" />
-    <Compile Include="MonoDevelop.From\RemoteProcessServer.cs" />
-    <Compile Include="RemoteXUnitRunner.cs" />
     <Compile Include="..\MonoDevelop.XUnit\MonoDevelop.UnitTesting.XUnit\RemoteTestResult.cs">
       <Link>RemoteTestResult.cs</Link>
     </Compile>
@@ -75,9 +67,36 @@
     <Compile Include="..\MonoDevelop.XUnit\MonoDevelop.UnitTesting.XUnit\IRemoteEventListener.cs">
       <Link>IRemoteEventListener.cs</Link>
     </Compile>
+    <Compile Include="..\XUnitRunner\XUnitRunner.cs">
+      <Link>XUnitRunner.cs</Link>
+    </Compile>
+    <Compile Include="..\XUnitRunner\DefaultDiscoveryVisitor.cs">
+      <Link>DefaultDiscoveryVisitor.cs</Link>
+    </Compile>
+    <Compile Include="..\XUnitRunner\Program.cs">
+      <Link>Program.cs</Link>
+    </Compile>
+    <Compile Include="..\XUnitRunner\DefaultExecutionVisitor.cs">
+      <Link>DefaultExecutionVisitor.cs</Link>
+    </Compile>
+    <Compile Include="..\XUnitRunner\RemoteXUnitRunner.cs">
+      <Link>RemoteXUnitRunner.cs</Link>
+    </Compile>
+    <Compile Include="..\XUnitRunner\Sample.cs">
+      <Link>Sample.cs</Link>
+    </Compile>
+    <Compile Include="..\XUnitRunner\MonoDevelop.From\BinaryMessage.cs">
+      <Link>MonoDevelop.From\BinaryMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\XUnitRunner\MonoDevelop.From\RemoteProcessServer.cs">
+      <Link>MonoDevelop.From\RemoteProcessServer.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.From\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

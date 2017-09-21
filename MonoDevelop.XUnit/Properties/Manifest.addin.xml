@@ -4,6 +4,7 @@
 		<Import assembly="xunit.abstractions.dll" />
 		<Import assembly="xunit.runner.utility.net452.dll" />
 		<Import file="XUnit2/XUnitRunner.exe" />
+		<Import file="XUnit2/XUnitRunner.x86.exe" />
 		<Import file="XUnit2/xunit.abstractions.dll" />
 		<Import file="XUnit2/xunit.assert.dll" />
 		<Import file="XUnit2/xunit.core.dll" />
