@@ -51,6 +51,7 @@ namespace MonoDevelop.UnitTesting.XUnit
 		public abstract string AssemblyPath { get; }
 		public abstract string CachePath { get; }
 		public abstract IList<string> SupportAssemblies { get; }
+		public DotNetProject Project { get; }
 
 		DateTime lastAssemblyTime;
 		XUnitExecutionSession session;
@@ -65,6 +66,7 @@ namespace MonoDevelop.UnitTesting.XUnit
 		public XUnitAssemblyTestSuite(string name, DotNetProject project) : base(name, project)
 		{
 			cache = new XUnitTestInfoCache(this);
+			Project = project;
 		}
 
 		public XUnitExecutionSession CreateExecutionSession(bool reportToMonitor)

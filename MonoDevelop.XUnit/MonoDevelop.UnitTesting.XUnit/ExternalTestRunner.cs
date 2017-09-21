@@ -35,6 +35,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using System.Threading.Tasks;
 using MonoDevelop.XUnit;
+using MonoDevelop.Projects;
+using System.Xml.Linq;
 
 namespace MonoDevelop.UnitTesting.XUnit.External
 {
@@ -42,12 +44,43 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 	{
 		RemoteProcessConnection connection;
 		IRemoteEventListener listener;
+		DotNetProject project;
+
+		public ExternalTestRunner(DotNetProject project)
+		{
+			this.project = project;
+		}
 
 		public Task Connect(XUnitVersion version, IExecutionHandler executionHandler = null, OperationConsole console = null)
 		{
-			var bitness = Environment.GetEnvironmentVariable("MONODEVELOP_XUNIT_RUNNER_BITNESS")?.ToUpperInvariant();
-			if (string.IsNullOrEmpty(bitness))
+			string setting = null;
+			var folder = project?.BaseDirectory.FullPath;
+			if (Directory.Exists(folder)) {
+				// IMPORTANT: VS allows selection of .runsettings file name, but here we use a hardcoded one for simplicity.
+				var file = Path.Combine(folder, "xunit.runsettings");
+				if (File.Exists(file))
+				{
+					var xml = XDocument.Load(file);
+					setting = xml.Root.Element("RunConfiguration")?.Element("TargetPlatform")?.Value.ToUpperInvariant();
+					if (setting == null)
+					{
+						// IMPORTANT: Visual Studio default is x86.
+						setting = "X86";
+					}
+				}
+			}
+
+			// IMPORTANT: if no .runsettings file is found, use the extension setting from environment variable.
+			var bitness = setting ?? Environment.GetEnvironmentVariable("MONODEVELOP_XUNIT_RUNNER_BITNESS")?.ToUpperInvariant();
+			if (bitness == null)
 			{
+				// IMPORTANT: extension default setting is X64.
+				bitness = "X64";
+			}
+
+			if (bitness != "X86" && bitness != "X64")
+			{
+				// IMPORTANT: extension default to X64.
 				bitness = "X64";
 			}
 

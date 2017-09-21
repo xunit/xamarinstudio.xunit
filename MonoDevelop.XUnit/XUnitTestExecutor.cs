@@ -130,7 +130,7 @@ namespace MonoDevelop.XUnit
 			}
 #else
 			using (var session = test.CreateExecutionSession(reportToMonitor)) {
-				using (var runner = new ExternalTestRunner()) {
+				using (var runner = new ExternalTestRunner(rootSuite.Project)) {
 					runner.Connect(XUnitVersion.XUnit2, context.ExecutionContext.ExecutionHandler).Wait();
 					var localTestMonitor = new LocalTestMonitor(context, rootSuite, rootSuite.Name, false);
 

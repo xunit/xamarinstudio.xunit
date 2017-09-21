@@ -104,7 +104,7 @@ namespace MonoDevelop.XUnit
 					testInfo = runner.GetTestInfo(testSuite.AssemblyPath, testSuite.SupportAssemblies.ToArray());
 					testSuite.OnTestSuiteLoaded(testInfo);
 #else
-					using (var runner = new ExternalTestRunner()) {
+					using (var runner = new ExternalTestRunner(testSuite.Project)) {
 						runner.Connect(XUnitVersion.XUnit2).Wait();		
  						testInfo = runner.GetTestInfo(testSuite.AssemblyPath, testSuite.SupportAssemblies.ToList()).Result;		
  						testSuite.OnTestSuiteLoaded(testInfo);		

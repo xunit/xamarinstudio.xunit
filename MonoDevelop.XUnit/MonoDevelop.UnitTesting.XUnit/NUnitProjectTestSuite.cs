@@ -32,8 +32,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
@@ -110,13 +108,6 @@ namespace MonoDevelop.UnitTesting.XUnit
                     return new XUnitProjectTestSuite (project);
             }
 
-			var packages = AsyncHelpers.RunSync(() => project.GetPackageDependencies(ConfigurationSelector.Default, CancellationToken.None));
-			foreach (var package in packages) {
-				var nv = GetXUnitVersion (package);
-				if (nv != null)
-					return new XUnitProjectTestSuite (project);
-			}
-
             return null;
         }
 
@@ -144,19 +135,6 @@ namespace MonoDevelop.UnitTesting.XUnit
 
             return null;
         }
-
-		/// <summary>
-		/// Gets the xunit.net version from the reference.
-		/// </summary>
-		/// <returns>The xunit.net version.</returns>
-		/// <param name="p">Project reference.</param>
-		public static XUnitVersion? GetXUnitVersion(PackageDependency p)
-		{
-			if (p.Name == "xunit.core") // xUnit.Net 2.x
-				return XUnitVersion.XUnit2;
-
-			return null;
-		}
 
 		/// <summary>
 		/// Gets the source code location.
