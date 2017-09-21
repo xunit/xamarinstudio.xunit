@@ -4,7 +4,7 @@ using Mono.Addins.Description;
 [assembly:Addin (
 	"MonoDevelop.XUnit2", 
 	Namespace = "MonoDevelop.XUnit",
-	Version = "0.7.8"
+	Version = "0.7.9"
 )]
 
 [assembly:AddinName ("xUnit.NET 2 testing framework support")]
