@@ -27,22 +27,7 @@ namespace XUnitRunner
 			Assembly.LoadFrom(Path.Combine(path, "xunit.runner.utility.net452.dll"));
 		}
 
-		//public void Run(string testAssemblyPath)
-		//{
-		//	if (null != testAssemblyPath && File.Exists(testAssemblyPath)) {
-		//		using (var controller = new XunitFrontController(AppDomainSupport.Denied, testAssemblyPath))
-		//		using (var discoveryVisitor = new DefaultDiscoveryVisitor())
-		//		using (var executionVisitor = new DefaultExecutionVisitor()) {
-		//			controller.Find(false, discoveryVisitor, TestFrameworkOptions.ForDiscovery());
-		//			discoveryVisitor.Finished.WaitOne();
-
-		//			controller.RunTests(discoveryVisitor.TestCases, executionVisitor, TestFrameworkOptions.ForExecution());
-		//			executionVisitor.Finished.WaitOne();
-		//		}
-		//	}
-		//}
-
-		TestAssemblyConfiguration LoadTestAssemblyConfiguration(string assembly)
+TestAssemblyConfiguration LoadTestAssemblyConfiguration(string assembly)
 		{
 			Type t = Type.GetType("Mono.Runtime");
 			TestAssemblyConfiguration conf;

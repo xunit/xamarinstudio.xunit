@@ -43,13 +43,16 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 		RemoteProcessConnection connection;
 		IRemoteEventListener listener;
 
-		public ExternalTestRunner()
-		{
-		}
-
 		public Task Connect(XUnitVersion version, IExecutionHandler executionHandler = null, OperationConsole console = null)
 		{
-			var exePath = Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), version.ToString(), "XUnitRunner.exe");
+			var bitness = Environment.GetEnvironmentVariable("MONODEVELOP_XUNIT_RUNNER_BITNESS")?.ToUpperInvariant();
+			if (string.IsNullOrEmpty(bitness))
+			{
+				bitness = "X64";
+			}
+
+			var executableName = bitness == "X64" ? "XUnitRunner.exe" : "XUnitRunner.x86.exe";
+			var exePath = Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), version.ToString(), executableName);
 			connection = new RemoteProcessConnection(exePath, executionHandler, console, Runtime.MainSynchronizationContext);
 			connection.AddListener(this); // execution handler is where the debugger kicks in.
 			return connection.Connect();
