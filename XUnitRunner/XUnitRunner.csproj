@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{130F2779-DC0E-4E77-8041-D46CC3F6148D}</ProjectGuid>
+    <ProjectGuid>{b31ddf2f-ba0f-4123-a920-5588f84c053f}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>XUnitRunner</RootNamespace>
     <AssemblyName>XUnitRunner</AssemblyName>
