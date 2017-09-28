@@ -186,6 +186,11 @@ namespace MonoDevelop.UnitTesting.XUnit
 				Monitor.PulseAll(locker);
 			}
 
+			if (testInfo.Tests == null && testInfo.Name == null)
+			{
+				return;
+			}
+
 			Runtime.RunInMainThread(delegate
 			{
 				AsyncCreateTests(testInfo);

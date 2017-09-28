@@ -105,11 +105,11 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 				CrashLogFile = crashLogFile
 			};
 
-			var r = (await connection.SendMessage(msg)).Result;
+			var r = await connection.SendMessage(msg);
 
 			await connection.ProcessPendingMessages();
 
-			return ToUnitTestResult(r);
+			return ToUnitTestResult(r.Result);
 		}
 
 		UnitTestResult ToUnitTestResult(RemoteTestResult r)
@@ -144,8 +144,9 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 			try {
 				return (await connection.SendMessage(msg)).Result;
 			} catch (Exception ex) {
-				LoggingService.LogError(ex.ToString ());
-				return new XUnitTestInfo();
+				var info = ex.ToString();
+				LoggingService.LogError(info);
+				return new XUnitTestInfo{ Name = info };
 			}
 		}
 
