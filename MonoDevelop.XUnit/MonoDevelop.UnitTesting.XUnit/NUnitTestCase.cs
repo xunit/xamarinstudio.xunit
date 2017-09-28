@@ -97,10 +97,8 @@ namespace MonoDevelop.UnitTesting.XUnit
 
 			int count = CountResults(session.Result);
 
-			if (count > 0)
-			{
-				if (count < 2)
-				{
+			if (count > 0) {
+				if (count < 2) {
 					test = new VirtualTest(this, count);
 					result = CopyResult(session.Result);
 
@@ -122,11 +120,13 @@ namespace MonoDevelop.UnitTesting.XUnit
 			result.Time = TimeSpan.FromSeconds(Decimal.ToDouble(executionTime));
 			result.ConsoleOutput = output;
 
-			if (messages.Length > 0)
-				result.Message = messages[0];
+			if (messages.Length > 0) {
+				result.Message = String.Join(Environment.NewLine, messages);
+			}
 
-			if (stackTraces.Length > 0)
-				result.StackTrace = stackTraces[0];
+			if (stackTraces.Length > 0) {
+				result.StackTrace = String.Join(Environment.NewLine, stackTraces);
+			}
 
 			if (test != null)
 			{
