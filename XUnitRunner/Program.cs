@@ -28,7 +28,7 @@ namespace XUnitRunner
 		private static void RegisterRollbar()
 		{
 			Rollbar.Init(new RollbarConfig {
-				AccessToken = "ab0cc28be33c444fbf877dd320c89598",
+				AccessToken = "ed0dab184230478c97c81d0a6b77ce67",
 				Environment = "production"
 			});
 			var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();

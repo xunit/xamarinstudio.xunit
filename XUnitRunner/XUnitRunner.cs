@@ -27,7 +27,7 @@ namespace XUnitRunner
 			Assembly.LoadFrom(Path.Combine(path, "xunit.runner.utility.net452.dll"));
 		}
 
-TestAssemblyConfiguration LoadTestAssemblyConfiguration(string assembly)
+		TestAssemblyConfiguration LoadTestAssemblyConfiguration(string assembly)
 		{
 			Type t = Type.GetType("Mono.Runtime");
 			TestAssemblyConfiguration conf;

@@ -158,6 +158,7 @@ namespace MonoDevelop.XUnit
 						runner.Run(localTestMonitor, nameFilter, path, "", supportAssemblies, null, null, crashLogFile).Wait();
 
 					} catch (Exception ex) {
+						RollbarDotNet.Rollbar.Report(ex);
 						if (!localTestMonitor.Canceled) {
 							LoggingService.LogError(ex.ToString());
 							result = UnitTestResult.CreateFailure(ex);

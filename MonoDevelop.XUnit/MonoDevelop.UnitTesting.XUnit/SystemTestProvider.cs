@@ -29,10 +29,12 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using RollbarDotNet;
 
 namespace MonoDevelop.UnitTesting.XUnit
 {
@@ -49,8 +51,37 @@ namespace MonoDevelop.UnitTesting.XUnit
 		{
 			var attribute = GetAssemblyAttribute<AddinAttribute> (Assembly.GetExecutingAssembly ());
 			LoggingService.LogInfo ($"xUnit.net for MonoDevelop/Xamarin Studio version {attribute.Version}");
+			RegisterRollbar(attribute.Version);
 			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChanged;
-			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChanged;
+			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChanged;			
+		}
+
+		private static bool rollbarInitialized = false;
+
+		private static void RegisterRollbar(string version)
+		{
+			if (rollbarInitialized)
+			{
+				return;
+			}
+
+			rollbarInitialized = true;
+			Rollbar.Init(new RollbarConfig {
+				AccessToken = "ab0cc28be33c444fbf877dd320c89598",
+				Environment = "production"
+			});
+			var userName = $"{version}";
+			Rollbar.PersonData(() => new Person(version) {
+				UserName = userName
+			});
+
+			AppDomain.CurrentDomain.UnhandledException += (sender, args) => {
+				Rollbar.Report(args.ExceptionObject as System.Exception);
+			};
+
+			TaskScheduler.UnobservedTaskException += (sender, args) => {
+				Rollbar.Report(args.Exception);
+			};
 		}
 
 		static T GetAssemblyAttribute<T>(System.Reflection.Assembly ass) where T : Attribute

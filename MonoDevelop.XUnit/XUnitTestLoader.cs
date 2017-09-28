@@ -112,6 +112,7 @@ namespace MonoDevelop.XUnit
 #endif
 				} catch (Exception ex) {
 					LoggingService.LogError(ex.ToString());
+					RollbarDotNet.Rollbar.Report(ex);
 				}
 			}
 		}

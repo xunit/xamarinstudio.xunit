@@ -144,6 +144,7 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 			try {
 				return (await connection.SendMessage(msg)).Result;
 			} catch (Exception ex) {
+				RollbarDotNet.Rollbar.Report(ex);
 				var info = ex.ToString();
 				LoggingService.LogError(info);
 				return new XUnitTestInfo{ Name = info };

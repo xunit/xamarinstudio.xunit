@@ -163,6 +163,7 @@ namespace MonoDevelop.Core.Execution
 						Console.WriteLine ("[SERVER] XS >> RP " + mtype + msg);
 					}
 				} catch (Exception e) {
+					RollbarDotNet.Rollbar.Report(e);
 					Console.WriteLine (e);
 					break;
 				}
@@ -214,6 +215,7 @@ namespace MonoDevelop.Core.Execution
 				try {
 					msg.Write (outStream);
 				} catch (Exception ex) {
+					RollbarDotNet.Rollbar.Report(ex);
 					msg.CreateErrorResponse (ex.ToString (), true).Write (outStream);
 				}
 			}
@@ -296,6 +298,7 @@ namespace MonoDevelop.Core.Execution
 					server.LogError (ex);
 					response = msg.CreateErrorResponse (ex.Message, !(ex is RemoteProcessException));
 					Console.WriteLine (ex);
+					RollbarDotNet.Rollbar.Report(ex);
 				}
 				if (response != null) {
 					response.Id = msg.Id;

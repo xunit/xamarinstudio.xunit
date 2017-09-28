@@ -3,6 +3,8 @@
 	<Runtime>
 		<Import assembly="xunit.abstractions.dll" />
 		<Import assembly="xunit.runner.utility.net452.dll" />
+		<Import assembly="Rollbar.dll" />
+        <Import assembly="Newtonsoft.Json.dll" />
 		<Import file="XUnit2/XUnitRunner.exe" />
 		<Import file="XUnit2/XUnitRunner.x86.exe" />
 		<Import file="XUnit2/xunit.abstractions.dll" />
@@ -10,6 +12,8 @@
 		<Import file="XUnit2/xunit.core.dll" />
 		<Import file="XUnit2/xunit.execution.desktop.dll" />
 		<Import file="XUnit2/xunit.runner.utility.net452.dll" />
+		<Import file="XUnit2/Rollbar.dll" />
+		<Import file="XUnit2/Newtonsoft.Json.dll" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/UnitTesting/TestProviders">
