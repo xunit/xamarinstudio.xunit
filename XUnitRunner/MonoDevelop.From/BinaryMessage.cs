@@ -190,7 +190,7 @@ namespace MonoDevelop.Core.Execution
 				bw.Write ((double)val);
 			} else if (val is string) {
 				bw.Write ((byte)TypeCode.String);
-				bw.Write ((string)val);
+				bw.Write ((string)val ?? "");
 			} else if (val is bool) {
 				bw.Write ((byte)TypeCode.Boolean);
 				bw.Write ((bool)val);
@@ -260,7 +260,7 @@ namespace MonoDevelop.Core.Execution
 				} else if (et == typeof(string)) {
 					bw.Write((byte)TypeCode.String);
 					foreach (var v in (string[])val)
-						bw.Write(v);
+						bw.Write(v ?? "");
 				} else if (et == typeof(bool)) {
 					bw.Write((byte)TypeCode.Boolean);
 					foreach (var v in (bool[])val)
@@ -306,7 +306,7 @@ namespace MonoDevelop.Core.Execution
 				} else if (et == typeof(string)) {
 					bw.Write((byte)TypeCode.String);
 					foreach (var v in (string[,])val)
-						bw.Write(v);
+						bw.Write(v ?? "");
 				} else if (et == typeof(bool)) {
 					bw.Write((byte)TypeCode.Boolean);
 					foreach (var v in (bool[,])val)
