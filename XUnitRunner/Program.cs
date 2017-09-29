@@ -27,6 +27,24 @@ namespace XUnitRunner
 
 		private static void RegisterRollbar()
 		{
+			// IMPORTANT: if no .runsettings file is found, use the extension setting from environment variable.
+			var enabledString = Environment.GetEnvironmentVariable("MONODEVELOP_XUNIT_ROLLBAR_ENABLED")?.ToUpperInvariant();
+			if (enabledString == null) {
+				// IMPORTANT: by default enable rollbar.
+				enabledString = "TRUE";
+			}
+
+			bool enabled;
+			if (!bool.TryParse(enabledString, out enabled)) {
+				enabled = true;
+			}
+
+			if (!enabled) {
+				return;
+			}
+
+			Console.WriteLine($"This extension uses Rollbar to log information. To disable logging, set environment variable MONODEVELOP_XUNIT_ROLLBAR_ENABLED to FALSE");
+
 			Rollbar.Init(new RollbarConfig {
 				AccessToken = "ed0dab184230478c97c81d0a6b77ce67",
 				Environment = "production"

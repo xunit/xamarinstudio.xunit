@@ -50,7 +50,7 @@ namespace MonoDevelop.UnitTesting.XUnit
 		public SystemTestProvider ()
 		{
 			var attribute = GetAssemblyAttribute<AddinAttribute> (Assembly.GetExecutingAssembly ());
-			LoggingService.LogInfo ($"xUnit.net for MonoDevelop/Xamarin Studio version {attribute.Version}");
+			LoggingService.LogInfo ($"xUnit.net for MonoDevelop/Visual Studio for Mac version {attribute.Version}");
 			RegisterRollbar(attribute.Version);
 			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChanged;
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChanged;			
@@ -66,6 +66,26 @@ namespace MonoDevelop.UnitTesting.XUnit
 			}
 
 			rollbarInitialized = true;
+			// IMPORTANT: if no .runsettings file is found, use the extension setting from environment variable.
+			var enabledString = Environment.GetEnvironmentVariable("MONODEVELOP_XUNIT_ROLLBAR_ENABLED")?.ToUpperInvariant();
+			if (enabledString == null) {
+				// IMPORTANT: by default enable rollbar.
+				enabledString = "TRUE";
+			}
+
+			bool enabled;
+			if (!bool.TryParse(enabledString, out enabled))
+			{
+				enabled = true;
+			}
+
+			if (!enabled)
+			{
+				return;
+			}
+
+			LoggingService.LogInfo($"This extension uses Rollbar to log information. To disable logging, set environment variable MONODEVELOP_XUNIT_ROLLBAR_ENABLED to FALSE");
+
 			Rollbar.Init(new RollbarConfig {
 				AccessToken = "ab0cc28be33c444fbf877dd320c89598",
 				Environment = "production"

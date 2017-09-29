@@ -97,16 +97,16 @@
     <Reference Include="xunit.runner.utility.net452">
       <HintPath>..\packages\xunit.runner.utility.2.2.0\lib\net452\xunit.runner.utility.net452.dll</HintPath>
     </Reference>
-    <Reference Include="Rollbar">
-      <HintPath>..\packages\Rollbar.0.3.2\lib\net45\Rollbar.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="templates\" />
     <Folder Include="MonoDevelop.UnitTesting.XUnit\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\lib\Rollbar.NET\Rollbar\Rollbar.csproj">
+      <Project>{3A99C5E2-AE41-49CA-9CB3-2C3A70D2A8C1}</Project>
+      <Name>Rollbar</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\packages\MonoDevelop.Addins.0.3.18\build\MonoDevelop.Addins.targets" Condition="Exists('..\packages\MonoDevelop.Addins.0.3.18\build\MonoDevelop.Addins.targets')" />
 </Project>
