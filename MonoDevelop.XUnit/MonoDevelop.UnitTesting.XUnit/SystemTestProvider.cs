@@ -101,6 +101,7 @@ namespace MonoDevelop.UnitTesting.XUnit
 
 			TaskScheduler.UnobservedTaskException += (sender, args) => {
 				Rollbar.Report(args.Exception);
+				args.SetObserved();
 			};
 		}
 
