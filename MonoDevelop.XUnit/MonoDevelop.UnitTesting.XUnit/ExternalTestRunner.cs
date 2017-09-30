@@ -58,12 +58,10 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 			if (Directory.Exists(folder)) {
 				// IMPORTANT: VS allows selection of .runsettings file name, but here we use a hardcoded one for simplicity.
 				var file = Path.Combine(folder, "xunit.runsettings");
-				if (File.Exists(file))
-				{
+				if (File.Exists(file)) {
 					var xml = XDocument.Load(file);
 					setting = xml.Root.Element("RunConfiguration")?.Element("TargetPlatform")?.Value.ToUpperInvariant();
-					if (setting == null)
-					{
+					if (setting == null) {
 						// IMPORTANT: Visual Studio default is x86.
 						setting = "X86";
 					}
@@ -72,14 +70,12 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 
 			// IMPORTANT: if no .runsettings file is found, use the extension setting from environment variable.
 			var bitness = setting ?? Environment.GetEnvironmentVariable("MONODEVELOP_XUNIT_RUNNER_BITNESS")?.ToUpperInvariant();
-			if (bitness == null)
-			{
+			if (bitness == null) {
 				// IMPORTANT: extension default setting is X64.
 				bitness = "X64";
 			}
 
-			if (bitness != "X86" && bitness != "X64")
-			{
+			if (bitness != "X86" && bitness != "X64") {
 				// IMPORTANT: extension default to X64.
 				bitness = "X64";
 			}
@@ -105,11 +101,11 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 				CrashLogFile = crashLogFile
 			};
 
-			var r = await connection.SendMessage(msg);
+			var r = (await connection.SendMessage(msg)).Result;
 
 			await connection.ProcessPendingMessages();
 
-			return ToUnitTestResult(r.Result);
+			return ToUnitTestResult(r);
 		}
 
 		UnitTestResult ToUnitTestResult(RemoteTestResult r)
@@ -147,7 +143,7 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 				RollbarDotNet.Rollbar.Report(ex);
 				var info = ex.ToString();
 				LoggingService.LogError(info);
-				return new XUnitTestInfo{ Name = info };
+				return new XUnitTestInfo { Name = info };
 			}
 		}
 
@@ -166,7 +162,7 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 		[MessageHandler]
 		public void OnTestPassed(TestPassedMessage msg)
 		{
-			listener.OnTestPassed(msg.TestCaseId, (decimal)(msg.ExecutionTime.TotalMilliseconds/1000.0), msg.Output);
+			listener.OnTestPassed(msg.TestCaseId, (decimal)(msg.ExecutionTime.TotalMilliseconds / 1000.0), msg.Output);
 		}
 
 		[MessageHandler]
@@ -181,61 +177,61 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 			listener.OnTestSkipped(msg.TestCaseId, msg.Reason);
 		}
 
-        public void Dispose ()
-        {
-            connection.Dispose ();
-        }
-    }
+		public void Dispose()
+		{
+			connection.Disconnect().Ignore();
+		}
+	}
 
-    class LocalTestMonitor : MarshalByRefObject, IRemoteEventListener
-    {
-        TestContext context;
-        UnitTest rootTest;
-        public bool Canceled;
+	class LocalTestMonitor : MarshalByRefObject, IRemoteEventListener
+	{
+		TestContext context;
+		UnitTest rootTest;
+		public bool Canceled;
 
-        public LocalTestMonitor (TestContext context, UnitTest rootTest, string rootFullName, bool singleTestRun)
-        {
-            this.rootTest = rootTest;
-            this.context = context;
-        }
+		public LocalTestMonitor(TestContext context, UnitTest rootTest, string rootFullName, bool singleTestRun)
+		{
+			this.rootTest = rootTest;
+			this.context = context;
+		}
 
-		XUnitTestCase GetLocalTest (string sname)
-        {
-            if (sname == null)
-                return null;
-            UnitTest tt = FindTest (rootTest, sname);
-            return tt as XUnitTestCase;
-        }
+		XUnitTestCase GetLocalTest(string sname)
+		{
+			if (sname == null)
+				return null;
+			UnitTest tt = FindTest(rootTest, sname);
+			return tt as XUnitTestCase;
+		}
 
-        UnitTest FindTest (UnitTest t, string testPath)
-        {
-            var group = t as UnitTestGroup;
-            if (group == null)
-                return null;
-            return SearchRecursive (group, testPath);
-        }
+		UnitTest FindTest(UnitTest t, string testPath)
+		{
+			var group = t as UnitTestGroup;
+			if (group == null)
+				return null;
+			return SearchRecursive(group, testPath);
+		}
 
-        UnitTest SearchRecursive (UnitTestGroup group, string testPath)
-        {
-            UnitTest result;
-            foreach (var t in group.Tests) {
-                if (t.TestId == testPath)
-                    return t;
-                var childGroup = t as UnitTestGroup;
-                if (childGroup != null) {
-                    result = SearchRecursive (childGroup, testPath);
-                    if (result != null)
-                        return result;
-                }
-            }
-            return null;
-        }
+		UnitTest SearchRecursive(UnitTestGroup group, string testPath)
+		{
+			UnitTest result;
+			foreach (var t in group.Tests) {
+				if (t.TestId == testPath)
+					return t;
+				var childGroup = t as UnitTestGroup;
+				if (childGroup != null) {
+					result = SearchRecursive(childGroup, testPath);
+					if (result != null)
+						return result;
+				}
+			}
+			return null;
+		}
 
 		public void OnTestCaseStarting(string id)
 		{
 			if (Canceled)
 				return;
-			
+
 			var t = GetLocalTest(id);
 			if (t == null)
 				return;
@@ -257,7 +253,7 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 			var t = GetLocalTest(id);
 			if (t == null)
 				return;
-			t.OnFailed(context, id,executionTime,output,exceptionTypes,messages,stackTraces);
+			t.OnFailed(context, id, executionTime, output, exceptionTypes, messages, stackTraces);
 		}
 
 		public void OnTestPassed(string id, decimal executionTime, string output)
@@ -265,7 +261,7 @@ namespace MonoDevelop.UnitTesting.XUnit.External
 			var t = GetLocalTest(id);
 			if (t == null)
 				return;
-			t.OnPassed(context,id, executionTime, output);
+			t.OnPassed(context, id, executionTime, output);
 		}
 
 		public void OnTestSkipped(string id, string reason)
