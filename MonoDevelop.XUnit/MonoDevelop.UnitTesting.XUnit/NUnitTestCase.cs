@@ -125,7 +125,7 @@ namespace MonoDevelop.UnitTesting.XUnit
 			}
 
 			if (stackTraces.Length > 0) {
-				result.StackTrace = String.Join(Environment.NewLine, stackTraces);
+				result.StackTrace = String.Join(Environment.NewLine + Environment.NewLine, stackTraces);
 			}
 
 			if (test != null)
