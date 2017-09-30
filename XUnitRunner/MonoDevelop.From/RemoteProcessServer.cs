@@ -30,7 +30,6 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Reflection;
 using System.Linq;
-using System.Net;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -40,127 +39,139 @@ namespace MonoDevelop.Core.Execution
 		Stream outStream;
 		Stream inStream;
 		string messages = "";
+		bool shuttingDown;
 
-		Dictionary<string, MessageListenerHandler> listeners = new Dictionary<string, MessageListenerHandler> ();
-		Dictionary<string, Type> messageTypes = new Dictionary<string, Type> ();
+		Dictionary<string, MessageListenerHandler> listeners = new Dictionary<string, MessageListenerHandler>();
+		Dictionary<string, Type> messageTypes = new Dictionary<string, Type>();
 
 		const int MESSAGE_QUEUE_END = 1;
 
-		public void Connect (string [] processArgs, object processListener)
+		public void Connect(string[] processArgs, object processListener)
 		{
-			Connect (int.Parse (processArgs [0]), processListener, bool.Parse (processArgs [1]));
+			Connect(int.Parse(processArgs[0]), processListener, bool.Parse(processArgs[1]));
 		}
 
-		public void Connect (int port, object processListener, bool debugMode = false)
+		public void Connect(int port, object processListener, bool debugMode = false)
 		{
 			DebugMode = debugMode;
-			socket = new TcpClient (IPAddress.Loopback.ToString(), port);
-			outStream = socket.GetStream ();
+			socket = new TcpClient("127.0.0.1", port);
+			outStream = socket.GetStream();
 			inStream = outStream;
 
-			AddListener (processListener);
-			Start ();
+			AddListener(processListener);
+			Start();
 
-			BinaryMessage msg = new BinaryMessage ("Connect");
-			WriteMessage (1, msg);
+			BinaryMessage msg = new BinaryMessage("Connect");
+			WriteMessage(1, msg);
 		}
 
 		public bool DebugMode { get; private set; }
 
-		public void LogError (Exception ex)
+		public void LogError(Exception ex)
 		{
-			Log ("ERROR", ex.ToString ());
+			Log("ERROR", ex.ToString());
 		}
 
-		public void LogError (string message)
+		public void LogError(string message)
 		{
-			Log ("ERROR", message);
+			Log("ERROR", message);
 		}
 
-		public void LogWarning (string message)
+		public void LogWarning(string message)
 		{
-			Log ("WARNING", message);
+			Log("WARNING", message);
 		}
 
-		public void LogInfo (string message)
+		public void LogInfo(string message)
 		{
-			Log ("INFO", message);
+			Log("INFO", message);
 		}
 
-		private void Log (string tag, string message)
+		private void Log(string tag, string message)
 		{
 			if (messages.Length == 0)
 				messages += "\n";
 			messages += message;
-			Console.WriteLine (tag + ": " + message);
+			Console.WriteLine(tag + ": " + message);
 		}
 
-		public void ResetLog ()
+		public void ResetLog()
 		{
 			messages = "";
 		}
 
-		public string GetLog ()
+		public string GetLog()
 		{
 			return messages;
 		}
 
-		void Start ()
+		public void Shutdown()
 		{
-			var t = new Thread (Run);
-			t.Start ();
-		}
-
-		public void AddListener (MessageListener listener)
-		{
-			AddListener ((object)listener);
-		}
-
-		public void AddListener (object listener)
-		{
-			lock (listeners) {
-				var li = new MessageListenerHandler (listener);
-				li.InitListener (this);
-				listeners [li.TargetId] = li;
-				RegisterMessageTypes (li.Listener.GetMessageTypes ());
+			try {
+				shuttingDown = true;
+				inStream.Close();
+				socket.Close();
+			} catch {
+				// Ignore
 			}
 		}
 
-		public void RemoveListener (MessageListener listener)
+		void Start()
 		{
-			RemoveListener ((object)listener);
+			var t = new Thread(Run);
+			t.Start();
 		}
 
-		public void RemoveListener (object listener)
+		public void AddListener(MessageListener listener)
+		{
+			AddListener((object)listener);
+		}
+
+		public void AddListener(object listener)
 		{
 			lock (listeners) {
-				var li = listeners.Values.FirstOrDefault (l => l.Target == listener);
+				var li = new MessageListenerHandler(listener);
+				li.InitListener(this);
+				listeners[li.TargetId] = li;
+				RegisterMessageTypes(li.Listener.GetMessageTypes());
+			}
+		}
+
+		public void RemoveListener(MessageListener listener)
+		{
+			RemoveListener((object)listener);
+		}
+
+		public void RemoveListener(object listener)
+		{
+			lock (listeners) {
+				var li = listeners.Values.FirstOrDefault(l => l.Target == listener);
 				if (li != null)
-					listeners.Remove (li.TargetId);
+					listeners.Remove(li.TargetId);
 			}
 		}
 
-		public void SendMessage (BinaryMessage msg)
+		public void SendMessage(BinaryMessage msg)
 		{
-			WriteMessage (1, msg);
+			WriteMessage(1, msg);
 		}
 
-		public void Run ()
+		public void Run()
 		{
-			List<BinaryMessage> messages = new List<BinaryMessage> ();
+			List<BinaryMessage> messages = new List<BinaryMessage>();
 
-			while (true) {
+			while (!shuttingDown) {
 				BinaryMessage msg;
 				int type;
 				try {
-					type = inStream.ReadByte ();
+					type = inStream.ReadByte();
 					if (type == -1)
 						break;
-					msg = BinaryMessage.Read (inStream);
-					msg = LoadMessageData (msg);
+					msg = BinaryMessage.Read(inStream);
+					msg = LoadMessageData(msg);
 					if (DebugMode) {
 						String mtype = type == MESSAGE_QUEUE_END ? "[M] " : "[Q] ";
-						Console.WriteLine ("[SERVER] XS >> RP " + mtype + msg);
+						Console.WriteLine("[SERVER] XS >> RP " + mtype + msg);
 					}
 				} catch (Exception e) {
 					RollbarDotNet.Rollbar.Report(e);
@@ -169,75 +180,83 @@ namespace MonoDevelop.Core.Execution
 				}
 				if (msg.Name == "Stop" && msg.Target == "Process") {
 					try {
-						WriteMessage (0, msg.CreateResponse ());
+						WriteMessage(0, msg.CreateResponse());
 					} catch {
 						// Ignore
 					}
 					break;
 				}
-				messages.Add (msg);
+				if (msg.Name == "Ping" && msg.Target == "Process") {
+					try {
+						WriteMessage(0, msg.CreateResponse());
+					} catch {
+						// Ignore
+					}
+					continue;
+				}
+				messages.Add(msg);
 				if (type == MESSAGE_QUEUE_END) {
-					ProcessMessages (messages);
-					messages.Clear ();
+					ProcessMessages(messages);
+					messages.Clear();
 				}
 			}
 		}
 
-		void ProcessMessages (List<BinaryMessage> msgs)
+		void ProcessMessages(List<BinaryMessage> msgs)
 		{
 			foreach (BinaryMessage msg in msgs) {
 				MessageListenerHandler l;
 				lock (listeners) {
-					listeners.TryGetValue (msg.Target ?? "", out l);
+					listeners.TryGetValue(msg.Target ?? "", out l);
 				}
 
 				if (l != null) {
-					l.DispatchMessage (msg);
+					l.DispatchMessage(msg);
 				} else {
-					BinaryMessage response = msg.CreateErrorResponse ("No handler found for target: " + msg.Target, true);
-					SendResponse (response);
+					BinaryMessage response = msg.CreateErrorResponse("No handler found for target: " + msg.Target, true);
+					SendResponse(response);
 				}
 			}
 		}
 
-		public void SendResponse (BinaryMessage response)
+		public void SendResponse(BinaryMessage response)
 		{
-			WriteMessage (0, response);
+			WriteMessage(0, response);
 		}
 
-		public void WriteMessage (byte type, BinaryMessage msg)
+		public void WriteMessage(byte type, BinaryMessage msg)
 		{
-			msg.ReadCustomData ();
+			msg.ReadCustomData();
 			lock (listeners) {
 				if (DebugMode)
-					Console.WriteLine ("[SERVER] XS << RP " + type + " [" + msg.ProcessingTime + "ms] " + msg);
-				outStream.WriteByte (type);
+					Console.WriteLine("[SERVER] XS << RP " + type + " [" + msg.ProcessingTime + "ms] " + msg);
+				outStream.WriteByte(type);
 				try {
-					msg.Write (outStream);
+					msg.Write(outStream);
 				} catch (Exception ex) {
 					RollbarDotNet.Rollbar.Report(ex);
-					msg.CreateErrorResponse (ex.ToString (), true).Write (outStream);
+					msg.CreateErrorResponse(ex.ToString(), true).Write(outStream);
 				}
 			}
 		}
 
-		public void RegisterMessageTypes (params Type [] types)
+		public void RegisterMessageTypes(params Type[] types)
 		{
 			foreach (var t in types) {
-				var a = (MessageDataTypeAttribute)Attribute.GetCustomAttribute (t, typeof (MessageDataTypeAttribute));
+				var a = (MessageDataTypeAttribute)Attribute.GetCustomAttribute(t, typeof(MessageDataTypeAttribute));
 				if (a != null) {
 					var name = a.Name ?? t.FullName;
-					messageTypes [name] = t;
+					messageTypes[name] = t;
 				}
 			}
 		}
 
-		BinaryMessage LoadMessageData (BinaryMessage msg)
+		BinaryMessage LoadMessageData(BinaryMessage msg)
 		{
 			Type type;
-			if (messageTypes.TryGetValue (msg.Name, out type)) {
-				var res = (BinaryMessage)Activator.CreateInstance (type);
-				res.CopyFrom (msg);
+			if (messageTypes.TryGetValue(msg.Name, out type)) {
+				var res = (BinaryMessage)Activator.CreateInstance(type);
+				res.CopyFrom(msg);
 				return res;
 			}
 			return msg;
@@ -249,12 +268,12 @@ namespace MonoDevelop.Core.Execution
 			MessageListener listener;
 			object target;
 
-			public MessageListenerHandler (object target)
+			public MessageListenerHandler(object target)
 			{
 				this.target = target;
 				listener = target as MessageListener;
 				if (listener == null)
-					listener = new MessageListener (target);
+					listener = new MessageListener(target);
 			}
 
 			public object Target {
@@ -269,43 +288,43 @@ namespace MonoDevelop.Core.Execution
 				}
 			}
 
-			internal void InitListener (RemoteProcessServer server)
+			internal void InitListener(RemoteProcessServer server)
 			{
 				this.server = server;
 			}
 
-			public void Dispose ()
+			public void Dispose()
 			{
 			}
 
-			public void DispatchMessage (BinaryMessage msg)
+			public void DispatchMessage(BinaryMessage msg)
 			{
-				ThreadPool.QueueUserWorkItem ((state) => { ExecuteMessage (msg); });
+				ThreadPool.QueueUserWorkItem((state) => { ExecuteMessage(msg); });
 			}
 
-			void ExecuteMessage (BinaryMessage msg)
+			void ExecuteMessage(BinaryMessage msg)
 			{
 				BinaryMessage response = null;
-				var sw = System.Diagnostics.Stopwatch.StartNew ();
+				var sw = System.Diagnostics.Stopwatch.StartNew();
 				try {
 					if (msg.Name == "FlushMessages") {
-						response = msg.CreateResponse ();
+						response = msg.CreateResponse();
 					} else
-						response = listener.ProcessMessage (msg);
+						response = listener.ProcessMessage(msg);
 				} catch (Exception ex) {
 					if (ex is TargetInvocationException)
 						ex = ((TargetInvocationException)ex).InnerException;
-					server.LogError (ex);
-					response = msg.CreateErrorResponse (ex.Message, !(ex is RemoteProcessException));
-					Console.WriteLine (ex);
+					server.LogError(ex);
+					response = msg.CreateErrorResponse(ex.Message, !(ex is RemoteProcessException));
+					Console.WriteLine(ex);
 					RollbarDotNet.Rollbar.Report(ex);
 				}
 				if (response != null) {
 					response.Id = msg.Id;
 					response.ProcessingTime = sw.ElapsedMilliseconds;
-					server.SendResponse (response);
+					server.SendResponse(response);
 				} else if (!msg.OneWay)
-					server.SendResponse (msg.CreateErrorResponse ("Got no response from server", true));
+					server.SendResponse(msg.CreateErrorResponse("Got no response from server for message: " + msg, true));
 			}
 
 			public string TargetId {
