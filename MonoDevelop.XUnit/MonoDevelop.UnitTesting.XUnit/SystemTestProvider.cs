@@ -56,7 +56,7 @@ namespace MonoDevelop.UnitTesting.XUnit
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChanged;			
 		}
 
-		private static bool rollbarInitialized = false;
+		private static bool rollbarInitialized;
 
 		private static void RegisterRollbar(string version)
 		{
@@ -73,9 +73,7 @@ namespace MonoDevelop.UnitTesting.XUnit
 				enabledString = "TRUE";
 			}
 
-			bool enabled;
-			if (!bool.TryParse(enabledString, out enabled))
-			{
+			if (!bool.TryParse(enabledString, out bool enabled)) {
 				enabled = true;
 			}
 
@@ -95,17 +93,25 @@ namespace MonoDevelop.UnitTesting.XUnit
 				UserName = userName
 			});
 
+			const string remotProcessException = "MonoDevelop.Core.Execution.RemoteProcessException";
 			AppDomain.CurrentDomain.UnhandledException += (sender, args) => {
-				Rollbar.Report(args.ExceptionObject as System.Exception);
+				var exception = args.ExceptionObject as System.Exception;
+				var aggregate = exception as AggregateException;
+				if (aggregate == null || aggregate.InnerExceptions.Count != 1 || aggregate.InnerExceptions[0].GetType().FullName != remotProcessException) {
+					Rollbar.Report(exception);
+				}
 			};
 
 			TaskScheduler.UnobservedTaskException += (sender, args) => {
-				Rollbar.Report(args.Exception);
+				if (args.Exception.GetType().FullName != remotProcessException) {
+					Rollbar.Report(args.Exception);
+				}
+
 				args.SetObserved();
 			};
 		}
 
-		static T GetAssemblyAttribute<T>(System.Reflection.Assembly ass) where T : Attribute
+		static T GetAssemblyAttribute<T>(Assembly ass) where T : Attribute
 		{
 			object[] attributes = ass.GetCustomAttributes(typeof(T), false);
 			if (attributes == null || attributes.Length == 0)
@@ -125,13 +131,11 @@ namespace MonoDevelop.UnitTesting.XUnit
 		{
 			UnitTest test = null;
 
-			var dotnet = entry as DotNetProject;
-			if (dotnet != null)
-				test = XUnitProjectTestSuite.CreateTest (dotnet);
+			if (entry is DotNetProject dotnet)
+				test = XUnitProjectTestSuite.CreateTest(dotnet);
 
-			UnitTestGroup grp = test as UnitTestGroup;
-			if (grp != null && !grp.HasTests) {
-				test.Dispose ();
+			if (test is UnitTestGroup grp && !grp.HasTests) {
+				test.Dispose();
 				return null;
 			}
 
