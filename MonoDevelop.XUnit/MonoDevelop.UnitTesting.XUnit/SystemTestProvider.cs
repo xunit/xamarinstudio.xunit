@@ -70,7 +70,7 @@ namespace MonoDevelop.UnitTesting.XUnit
 			var enabledString = Environment.GetEnvironmentVariable("MONODEVELOP_XUNIT_ROLLBAR_ENABLED")?.ToUpperInvariant();
 			if (enabledString == null) {
 				// IMPORTANT: by default enable rollbar.
-				enabledString = "TRUE";
+				enabledString = "FALSE";
 			}
 
 			if (!bool.TryParse(enabledString, out bool enabled)) {
@@ -82,10 +82,10 @@ namespace MonoDevelop.UnitTesting.XUnit
 				return;
 			}
 
-			LoggingService.LogInfo($"This extension uses Rollbar to log information. To disable logging, set environment variable MONODEVELOP_XUNIT_ROLLBAR_ENABLED to FALSE");
+			LoggingService.LogInfo($"This extension uses Rollbar to log information. To enable logging, set environment variable MONODEVELOP_XUNIT_ROLLBAR_ENABLED to TRUE");
 
 			Rollbar.Init(new RollbarConfig {
-				AccessToken = "ab0cc28be33c444fbf877dd320c89598",
+				AccessToken = "375079eb85e54e388ef1a336a6bdc353",
 				Environment = "production"
 			});
 			var userName = $"{version}";
