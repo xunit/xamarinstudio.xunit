@@ -11,7 +11,9 @@ Lex Li started to review this project in Jan 2016, and then finished his initial
 Matt Ward, and Jose Medrano contributed important patches to move this project forward. Mikayla Hutchinson from Xamarin also kindly shared her advice to guide 
 the development.
 
-Now this addin works fine with MonoDevelop 7, and Visual Studio for Mac. Community members are welcome to raise issues and send patches at GitHub.
+This addin works fine with MonoDevelop 7, and Visual Studio for Mac. Community members are welcome to raise issues and send patches at GitHub.
+
+Microsoft open sourced the Visual Studio unit testing infrastructure as VSTest, and since Visual Studio for Mac 7.3 VSTest was ported. As a result, this extension is no longer needed. Thus, this marks the end of this project.
 
 References
 ----------
@@ -19,3 +21,4 @@ References
 * https://groups.google.com/forum/#!topic/mono-soc-2014/aJXSzqjdXPI
 * https://github.com/xunit/xamarinstudio.xunit
 * https://github.com/xunit/xamarinstudio.xunit/issues/6
+* https://blogs.msdn.microsoft.com/visualstudio/2017/12/04/visual-studio-2017-version-15-5-visual-studio-for-mac-released/
