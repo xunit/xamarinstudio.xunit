@@ -1,5 +1,10 @@
 [![Stories in Ready](https://badge.waffle.io/xunit/xamarinstudio.xunit.svg?label=ready&title=Ready)](http://waffle.io/xunit/xamarinstudio.xunit) 
 
+**IMPORTANT: Latest MonoDevelop 7 and Visual Studio for Mac uses VSTest to run xUnit.net test cases natively.
+Thus, you no longer need an extension like this. Please uninstall this extension to avoid any conflict.**
+
+**This project fulfilled its mission and officially ended on Dec 4, 2017.**
+
 xUnit.NET testing framework support
 ===================================
 Integrates xUnit.NET into the MonoDevelop / Visual Studio for Mac IDE.
